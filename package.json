@@ -1,11 +1,17 @@
 {
   "name": "debt",
   "version": "0.0.0",
+  "scripts": {
+    "test": "nodeunit tests/"
+  },
   "dependencies": {
     "mysql": "2.0.0-alpha9",
     "express": "3.4.4",
     "async": "0.2.9",
     "handlebars": "1.1.2",
     "hbs": "2.4.0"
+  },
+  "devDependencies": {
+    "nodeunit": "0.8.2"
   }
 }
