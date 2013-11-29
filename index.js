@@ -49,8 +49,13 @@ util.extend( Debt.prototype, {
 			}
 
 			this.database = database;
+			this._initModules();
 			callback( null );
 		}.bind( this ));
+	},
+
+	_initModules: function() {
+		this.ticket = require( "./lib/ticket" )( this );
 	},
 
 	install: function( callback ) {
