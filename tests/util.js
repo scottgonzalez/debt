@@ -155,3 +155,45 @@ exports.escapeHtml = {
 		test.done();
 	}
 };
+
+exports.htmlTag = {
+	"no attributes": function( test ) {
+		test.expect( 1 );
+
+		var html = util.htmlTag( "blink" );
+		test.equal( html, "<blink>", "Should produce just the tag with no attributes." );
+		test.done();
+	},
+
+	"empty attributes": function( test ) {
+		test.expect( 1 );
+
+		var html = util.htmlTag( "blink", {} );
+		test.equal( html, "<blink>", "Should produce just the tag with no attributes." );
+		test.done();
+	},
+
+	"with attributes": function( test ) {
+		test.expect( 1 );
+
+		var html = util.htmlTag( "a", {
+			href: "/",
+			title: "5 > 2"
+		});
+		test.equal( html, "<a href='/' title='5 &gt; 2'>", "Should contain escaped attributes." );
+		test.done();
+	},
+
+	"boolean attributes": function( test ) {
+		test.expect( 1 );
+
+		var html = util.htmlTag( "input", {
+			type: "checkbox",
+			checked: true,
+			disabled: false
+		});
+		test.equal( html, "<input type='checkbox' checked='checked'>",
+			"Should contain expanded checked and no disabled." );
+		test.done();
+	}
+};
