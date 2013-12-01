@@ -1,6 +1,11 @@
 {
   "name": "debt",
   "version": "0.0.0",
+  "author": "Scott González <scott.gonzalez@gmail.com> (http://scottgonzalez.com)",
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/scottgonzalez/debt/raw/master/LICENSE-MIT.txt"
+  },
   "scripts": {
     "test": "nodeunit tests/"
   },
