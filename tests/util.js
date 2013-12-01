@@ -67,6 +67,7 @@ exports.extend = {
 		test.done();
 	}
 };
+
 exports.deepExtend = {
 	"empty objects": function( test ) {
 		test.expect( 3 );
@@ -132,6 +133,25 @@ exports.deepExtend = {
 			},
 			fn2: two
 		}, "B should not change." );
+		test.done();
+	}
+};
+
+exports.escapeHtml = {
+	"no replacement": function( test ) {
+		test.expect( 1 );
+
+		var escaped = util.escapeHtml( "Hello, world!" );
+		test.equal( escaped, "Hello, world!", "No characters should be escaped." );
+		test.done();
+	},
+
+	"escape all bad characters": function( test ) {
+		test.expect( 1 );
+
+		var escaped = util.escapeHtml( "<name> says, \"Hello & goodbye, y'all!\"" );
+		test.equal( escaped, "&lt;name&gt; says, &quot;Hello &amp; goodbye, y&#039;all!&quot;",
+			"All bad characters should be replaced." );
 		test.done();
 	}
 };
