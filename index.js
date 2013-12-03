@@ -56,6 +56,7 @@ util.extend( Debt.prototype, {
 
 	_initModules: function() {
 		this.ticket = require( "./lib/ticket" )( this );
+		this.field = require( "./lib/field" )( this );
 	},
 
 	install: function( callback ) {
