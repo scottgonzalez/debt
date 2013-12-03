@@ -1,5 +1,33 @@
 var util = require( "../lib/util" );
 
+exports.delay = {
+	"no parameters": function( test ) {
+		test.expect( 2 );
+
+		var async = false;
+		util.delay(function() {
+			test.equal( arguments.length, 0, "No arguments should be passed." );
+			test.ok( async, "Should be async." );
+			test.done();
+		});
+		async = true;
+	},
+
+	"with parameters": function( test ) {
+		test.expect( 3 );
+
+		var providedParams = [ {}, {} ];
+		var async = false;
+		util.delay(function( a, b ) {
+			test.equal( arguments.length, 2, "Should pass argumenets." );
+			test.strictEqual( a, providedParams[ 0 ], "Should pass first parameter." );
+			test.strictEqual( b, providedParams[ 1 ], "Should pass second parameter." );
+			test.done();
+		}, providedParams[ 0 ], providedParams[ 1 ] );
+		async = true;
+	}
+};
+
 exports.extend = {
 	"empty objects": function( test ) {
 		test.expect( 3 );
