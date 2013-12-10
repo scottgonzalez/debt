@@ -1,4 +1,4 @@
-var field = require( "../lib/field" );
+var field = require( "../../lib/field" );
 
 exports.register = {
 	"registration": function( test ) {
