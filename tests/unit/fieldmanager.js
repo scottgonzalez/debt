@@ -1,6 +1,19 @@
 var field = require( "../../lib/field" );
 
 exports.register = {
+	"invalid type": function( test ) {
+		test.expect( 1 );
+
+		test.throws(
+			function() {
+				field.FieldManager.register( "test type", {} );
+			},
+			/^Invalid `type` \(test type\)\./,
+			"Should throw for invalid type."
+		);
+		test.done();
+	},
+
 	"registration": function( test ) {
 		test.expect( 3 );
 
@@ -61,6 +74,21 @@ exports.create = {
 		}, function( error ) {
 			test.equal( error.message, "Missing required field `label`.",
 				"Should throw for missing label." );
+			test.done();
+		});
+	},
+
+	"invalid label": function( test ) {
+		test.expect( 1 );
+
+		var label = new Array( 65 ).join( "a" );
+
+		this.fieldManager.create({
+			type: "test",
+			label: label
+		}, function( error ) {
+			test.equal( error.message, "Invalid `label` (" + label + ").",
+				"Should throw for invalid label." );
 			test.done();
 		});
 	},
