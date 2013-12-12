@@ -225,3 +225,37 @@ exports.htmlTag = {
 		test.done();
 	}
 };
+
+exports.isLabel = {
+	"empty": function( test ) {
+		test.expect( 1 );
+
+		test.equal( util.isLabel( "" ), false, "Should not accept empty label." );
+		test.done();
+	},
+
+	"invalid": function( test ) {
+		test.expect( 4 );
+
+		test.equal( util.isLabel( "-" ), false,
+			"Cannot start with a dash" );
+		test.equal( util.isLabel( "_" ), false,
+			"Cannot start with an underscore" );
+		test.equal( util.isLabel( "a@b" ), false,
+			"Cannot contain special characters." );
+		test.equal( util.isLabel( new Array( 65 ).join( "a" ) ), false,
+			"Cannot be >63 characters" );
+		test.done();
+	},
+
+	"valid": function( test ) {
+		test.expect( 3 );
+
+		test.ok( util.isLabel( "a" ), "Minimal label" );
+		test.ok( util.isLabel( "A-_bC",
+			"Should accept Capitals, dashes, underscores." ) );
+		test.ok( util.isLabel( new Array( 64 ).join( "a" ) ),
+			"Should accept 63 characters." );
+		test.done();
+	}
+};
