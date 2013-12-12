@@ -1,9 +1,10 @@
-var field = require( "../../lib/field" );
+var FieldManager = require( "../../lib/field" ).FieldManager;
+var Field = require( "../../lib/field" ).Field;
 
 exports.init = {
 	setUp: function( done ) {
-		this._getSettings = field.Field.prototype.getSettings;
-		this._initFromSettings = field.Field.prototype.initFromSettings;
+		this._getSettings = Field.prototype.getSettings;
+		this._initFromSettings = Field.prototype.initFromSettings;
 
 		this.app = {
 			database: {}
@@ -12,8 +13,8 @@ exports.init = {
 	},
 
 	tearDown: function( done ) {
-		field.Field.prototype.getSettings = this._getSettings;
-		field.Field.prototype.initFromSettings = this._initFromSettings;
+		Field.prototype.getSettings = this._getSettings;
+		Field.prototype.initFromSettings = this._initFromSettings;
 		done();
 	},
 
@@ -22,7 +23,7 @@ exports.init = {
 
 		var providedApp = this.app;
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to field." );
 			test.equal( this.id, 37, "Should pass id to field." );
 
@@ -31,7 +32,7 @@ exports.init = {
 			});
 		};
 
-		var instance = new field.Field( this.app, 37 );
+		var instance = new Field( this.app, 37 );
 		instance.init(function( error ) {
 			test.equal( error.message, "database gone", "Should pass the error." );
 			test.done();
@@ -49,7 +50,7 @@ exports.init = {
 			config: "custom config"
 		};
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to field." );
 			test.strictEqual( this.database, providedApp.database,
 				"Should pass database to field." );
@@ -60,7 +61,7 @@ exports.init = {
 			});
 		};
 
-		field.Field.prototype.initFromSettings = function( settings, callback ) {
+		Field.prototype.initFromSettings = function( settings, callback ) {
 			test.strictEqual( settings, providedSettings, "Should pass settings." );
 
 			process.nextTick(function() {
@@ -68,7 +69,7 @@ exports.init = {
 			});
 		};
 
-		var instance = new field.Field( this.app, 37 );
+		var instance = new Field( this.app, 37 );
 		instance.init(function( error ) {
 			test.equal( error, null, "Should not pass an error." );
 			test.done();
@@ -79,7 +80,7 @@ exports.init = {
 exports.initFromSettings = {
 	setUp: function( done ) {
 		this.app = {};
-		this.field = new field.Field( this.app, 37 );
+		this.field = new Field( this.app, 37 );
 		done();
 	},
 
@@ -142,7 +143,7 @@ exports.getSettings = {
 		this.app = {
 			database: {}
 		};
-		this.field = new field.Field( this.app, 37 );
+		this.field = new Field( this.app, 37 );
 		done();
 	},
 

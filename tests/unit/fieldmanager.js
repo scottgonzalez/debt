@@ -1,4 +1,5 @@
-var field = require( "../../lib/field" );
+var FieldManager = require( "../../lib/field" ).FieldManager;
+var Field = require( "../../lib/field" ).Field;
 
 exports.register = {
 	"invalid type": function( test ) {
@@ -6,7 +7,7 @@ exports.register = {
 
 		test.throws(
 			function() {
-				field.FieldManager.register( "test type", {} );
+				FieldManager.register( "test type", {} );
 			},
 			/^Invalid `type` \(test type\)\./,
 			"Should throw for invalid type."
@@ -21,10 +22,10 @@ exports.register = {
 			testProp: "test value"
 		};
 
-		field.FieldManager.register( "test", prototype );
-		var Constructor = field.FieldManager.types.test;
+		FieldManager.register( "test", prototype );
+		var Constructor = FieldManager.types.test;
 		test.ok( Constructor, "Constructor should be stored in FieldManager.types." );
-		test.strictEqual( Constructor.super_, field.Field,
+		test.strictEqual( Constructor.super_, Field,
 			"Constructor should inherit from Field." );
 		test.equal( Constructor.prototype.testProp, "test value",
 			"Prototype should pass through." );
@@ -37,7 +38,7 @@ exports.create = {
 		this.app = {
 			database: {}
 		};
-		this.fieldManager = new field.FieldManager( this.app );
+		this.fieldManager = new FieldManager( this.app );
 		done();
 	},
 
@@ -180,17 +181,17 @@ exports.create = {
 
 exports.get = {
 	setUp: function( done ) {
-		this._getSettings = field.Field.prototype.getSettings;
+		this._getSettings = Field.prototype.getSettings;
 
 		this.app = {};
-		this.fieldManager = new field.FieldManager( this.app );
+		this.fieldManager = new FieldManager( this.app );
 		done();
 	},
 
 	tearDown: function( done ) {
-		field.Field.prototype.getSettings = this._getSettings;
+		Field.prototype.getSettings = this._getSettings;
 
-		delete field.FieldManager.types.fake;
+		delete FieldManager.types.fake;
 		done();
 	},
 
@@ -199,7 +200,7 @@ exports.get = {
 
 		var providedApp = this.app;
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to field." );
 			test.equal( this.id, 37, "Should pass id to field." );
 
@@ -219,7 +220,7 @@ exports.get = {
 
 		var providedApp = this.app;
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to field." );
 			test.equal( this.id, 37, "Should pass id to field." );
 
@@ -251,7 +252,7 @@ exports.get = {
 			config: ""
 		};
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to field." );
 			test.equal( this.id, 37, "Should pass id to field." );
 
@@ -260,7 +261,7 @@ exports.get = {
 			});
 		};
 
-		field.FieldManager.types.fake = function( app, id ) {
+		FieldManager.types.fake = function( app, id ) {
 			test.strictEqual( app, providedApp, "Should pass app to field." );
 			test.equal( id, 37, "Should pass id to field." );
 
@@ -291,13 +292,13 @@ exports.get = {
 			config: ""
 		};
 
-		field.Field.prototype.getSettings = function( callback ) {
+		Field.prototype.getSettings = function( callback ) {
 			process.nextTick(function() {
 				callback( null, providedSettings );
 			});
 		};
 
-		field.FieldManager.types.fake = function( app, id ) {
+		FieldManager.types.fake = function( app, id ) {
 			fakeInstance = this;
 
 			test.strictEqual( app, providedApp, "Should pass app to field." );

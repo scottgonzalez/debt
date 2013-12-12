@@ -1,11 +1,11 @@
-var ticket = require( "../../lib/ticket" );
+var Ticket = require( "../../lib/ticket" ).Ticket;
 
 exports.create = {
 	setUp: function( done ) {
 		this.app = {
 			database: {}
 		};
-		this.ticket = new ticket( this.app );
+		this.ticket = new Ticket( this.app );
 		done();
 	},
 
@@ -141,7 +141,7 @@ exports.get = {
 		this.app = {
 			database: {}
 		};
-		this.ticket = new ticket( this.app );
+		this.ticket = new Ticket( this.app );
 		done();
 	},
 
