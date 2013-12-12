@@ -4,4 +4,7 @@ node_js:
   - "0.10"
   - "0.8"
 notifications:
-  irc: "chat.freenode.net#debt"
+  irc:
+    channels:
+      - "chat.freenode.net#debt"
+    skip_join: true
