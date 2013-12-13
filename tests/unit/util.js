@@ -281,7 +281,7 @@ exports.isEmail = {
 			"Cannot start domain with a hyphen." );
 		test.equal( util.isEmail( "debt@example-.com" ), false,
 			"Cannot end domain with a hyphen." );
-		test.equal( util.isEmail( "debˇ@example!com" ), false,
+		test.equal( util.isEmail( "debt@example!com" ), false,
 			"Cannot contain special characters in domain." );
 		test.equal( util.isEmail( "debt@" + longLabel + ".com" ), false,
 			"Cannot contain domain label >63 characters." );
