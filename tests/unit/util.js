@@ -259,3 +259,46 @@ exports.isLabel = {
 		test.done();
 	}
 };
+
+exports.isEmail = {
+	"empty": function( test ) {
+		test.expect( 1 );
+
+		test.equal( util.isEmail( "" ), false, "Should not accept empty email." );
+		test.done();
+	},
+
+	"invalid": function( test ) {
+		test.expect( 6 );
+
+		var longLabel = new Array( 65 ).join( "a" );
+
+		test.equal( util.isEmail( "debt" ), false,
+			"Cannot be local only." );
+		test.equal( util.isEmail( "@example.com" ), false,
+			"Cannot be domain only." );
+		test.equal( util.isEmail( "debt@-example.com" ), false,
+			"Cannot start domain with a hyphen." );
+		test.equal( util.isEmail( "debt@example-.com" ), false,
+			"Cannot end domain with a hyphen." );
+		test.equal( util.isEmail( "debˇ@example!com" ), false,
+			"Cannot contain special characters in domain." );
+		test.equal( util.isEmail( "debt@" + longLabel + ".com" ), false,
+			"Cannot contain domain label >63 characters." );
+		test.done();
+	},
+
+	"valid": function( test ) {
+		test.expect( 3 );
+
+		var longLabel = new Array( 64 ).join( "a" );
+
+		test.ok( util.isEmail( longLabel + longLabel + "@example.com" ),
+			"Should accept very long local address." );
+		test.ok( util.isEmail( "debt@" + longLabel + ".com" ),
+			"Should accept 63 character domain labels." );
+		test.ok( util.isEmail( ".!#$%&'*+/=?^_`{|}~-a9@example.com" ),
+			"Should accept certain special characters in local address." );
+		test.done();
+	}
+};
