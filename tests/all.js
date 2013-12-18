@@ -2,7 +2,7 @@ var fs = require( "fs" );
 
 all([
 	unitTests,
-	checkCla
+	checkDco
 ], function( errors ) {
 	if ( errors.length ) {
 		process.exit( 1 );
@@ -38,26 +38,26 @@ function unitTests( callback ) {
 	reporter.run([ "tests/unit" ], options, callback );
 }
 
-function checkCla( callback ) {
-	var cla = require( "../tools/cla" );
+function checkDco( callback ) {
+	var dco = require( "../tools/dco" );
 
 	console.log();
-	console.log( "Checking CLA signature for all authors..." );
-	cla.getInvalidAuthors(function( error, authors ) {
+	console.log( "Checking commits for licensing..." );
+	dco.getCommitErrors(function( error, errors ) {
 		if ( error ) {
 			return callback( error );
 		}
 
-		if ( authors.length ) {
-			console.log( "The following authors have not signed the CLA:" );
-			authors.forEach(function( author ) {
-				console.log( "- " + author );
+		if ( errors.length ) {
+			console.log( "The following errors exist:" );
+			errors.forEach(function( error ) {
+				console.log( "- " + error );
 			});
 
-			return callback( new Error( "Invalid authors" ) );
+			return callback( new Error( "Invalid commits." ) );
 		}
 
-		console.log( "All authors have signed the CLA." );
+		console.log( "All commits have appropriate licensing." );
 		callback( null );
 	});
 }
