@@ -269,7 +269,7 @@ exports.isEmail = {
 	},
 
 	"invalid": function( test ) {
-		test.expect( 6 );
+		test.expect( 7 );
 
 		var longLabel = new Array( 65 ).join( "a" );
 
@@ -277,6 +277,8 @@ exports.isEmail = {
 			"Cannot be local only." );
 		test.equal( util.isEmail( "@example.com" ), false,
 			"Cannot be domain only." );
+		test.equal( util.isEmail( "debt@example" ), false,
+			"Cannot have a domain with only one label." );
 		test.equal( util.isEmail( "debt@-example.com" ), false,
 			"Cannot start domain with a hyphen." );
 		test.equal( util.isEmail( "debt@example-.com" ), false,
