@@ -2,6 +2,7 @@ var Database = require( "./lib/database" );
 var web = require( "./lib/web" );
 var util = require( "./lib/util" );
 var webDefaults = require( "./lib/web/defaults" );
+var githubAuthProvider = require( "./lib/auth/github" );
 
 exports = module.exports = debt;
 exports.Debt = Debt;
@@ -22,6 +23,8 @@ function Debt( options ) {
 	// Just merge default options
 	// Everything else waits until the app is initialized
 	this.options = util.deepExtend({
+		authProvider: githubAuthProvider,
+		cookieSecret: "exceptional bug tracking",
 		title: "DEBT",
 		express: webDefaults( this ),
 	}, options );
@@ -35,12 +38,6 @@ util.extend( Debt.prototype, {
 		// Remove database options to prevent leaking information to templates
 		var databaseOptions = this.options.database;
 		delete this.options.database;
-
-		// Create Express application
-		this.web = web.createServer( this );
-
-		// Expose application settings to templates via `app`
-		this.web.locals.app = this.options;
 
 		// Connect to the database
 		Database.createClient( databaseOptions, function( error, database ) {
@@ -58,6 +55,13 @@ util.extend( Debt.prototype, {
 		this.ticket = require( "./lib/ticket" )( this );
 		this.field = require( "./lib/field" )( this );
 		this.user = require( "./lib/user" )( this );
+		this.auth = require( "./lib/auth" )( this );
+
+		// Create Express application
+		this.web = web.createServer( this );
+
+		// Initialize auth provider
+		this.auth.init();
 	},
 
 	install: function( callback ) {

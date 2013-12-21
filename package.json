@@ -14,7 +14,10 @@
     "express": "3.4.4",
     "async": "0.2.9",
     "handlebars": "1.1.2",
-    "hbs": "2.4.0"
+    "hbs": "2.4.0",
+    "connect-oauth-github": "0.1.0",
+    "connect-mysql": "0.3.3",
+    "github-request": "1.1.0"
   },
   "devDependencies": {
     "nodeunit": "0.8.2",
