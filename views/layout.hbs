@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>{{app.title}}</title>
+</head>
+<body>
+
+{{#if activeUser}}
+	logged in as {{activeUser.username}}; <a href="/logout">logout</a>
+{{else}}
+	<a href="/login">login</a>
+{{/if}}
+
+{{{body}}}
+</body>
+</html>
