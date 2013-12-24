@@ -2,13 +2,21 @@ var FieldManager = require( "../../lib/field" ).FieldManager;
 var Field = require( "../../lib/field" ).Field;
 
 exports.register = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.fieldManager = new FieldManager( this.app );
+		done();
+	},
+
 	"invalid type": function( test ) {
 		test.expect( 1 );
 
 		test.throws(
 			function() {
-				FieldManager.register( "test type", {} );
-			},
+				this.fieldManager.register( "test type", {} );
+			}.bind( this ),
 			/^Invalid `type` \(test type\)\./,
 			"Should throw for invalid type."
 		);
@@ -22,8 +30,8 @@ exports.register = {
 			testProp: "test value"
 		};
 
-		FieldManager.register( "test", prototype );
-		var Constructor = FieldManager.types.test;
+		this.fieldManager.register( "test", prototype );
+		var Constructor = this.fieldManager.types.test;
 		test.ok( Constructor, "Constructor should be stored in FieldManager.types." );
 		test.strictEqual( Constructor.super_, Field,
 			"Constructor should inherit from Field." );
@@ -85,7 +93,7 @@ exports.create = {
 		var label = new Array( 65 ).join( "a" );
 
 		this.fieldManager.create({
-			type: "test",
+			type: "text",
 			label: label
 		}, function( error ) {
 			test.equal( error.message, "Invalid `label` (" + label + ").",
@@ -191,7 +199,6 @@ exports.get = {
 	tearDown: function( done ) {
 		Field.prototype.getSettings = this._getSettings;
 
-		delete FieldManager.types.fake;
 		done();
 	},
 
@@ -261,7 +268,7 @@ exports.get = {
 			});
 		};
 
-		FieldManager.types.fake = function( app, id ) {
+		this.fieldManager.types.fake = function( app, id ) {
 			test.strictEqual( app, providedApp, "Should pass app to field." );
 			test.equal( id, 37, "Should pass id to field." );
 
@@ -298,7 +305,7 @@ exports.get = {
 			});
 		};
 
-		FieldManager.types.fake = function( app, id ) {
+		this.fieldManager.types.fake = function( app, id ) {
 			fakeInstance = this;
 
 			test.strictEqual( app, providedApp, "Should pass app to field." );
