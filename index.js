@@ -55,6 +55,7 @@ util.extend( Debt.prototype, {
 		this.ticket = require( "./lib/ticket" )( this );
 		this.field = require( "./lib/field" )( this );
 		this.user = require( "./lib/user" )( this );
+		this.group = require( "./lib/group" )( this );
 		this.auth = require( "./lib/auth" )( this );
 
 		// Create Express application
