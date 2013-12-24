@@ -10,6 +10,19 @@ exports.register = {
 		done();
 	},
 
+	"missing type": function( test ) {
+		test.expect( 1 );
+
+		test.throws(
+			function() {
+				this.fieldManager.register( null, {} );
+			}.bind( this ),
+			/^Missing required parameter `type`\.$/,
+			"Should throw for missing type."
+		);
+		test.done();
+	},
+
 	"invalid type": function( test ) {
 		test.expect( 1 );
 
@@ -17,7 +30,7 @@ exports.register = {
 			function() {
 				this.fieldManager.register( "test type", {} );
 			}.bind( this ),
-			/^Invalid `type` \(test type\)\./,
+			/^Invalid `type` \(test type\)\.$/,
 			"Should throw for invalid type."
 		);
 		test.done();
