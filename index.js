@@ -34,6 +34,10 @@ util.extend( Debt.prototype, {
 	basePath: __dirname,
 
 	init: function( callback ) {
+		var error = this._checkRequiredOptions();
+		if ( error ) {
+			return util.delay( callback, error );
+		}
 
 		// Remove database options to prevent leaking information to templates
 		var databaseOptions = this.options.database;
@@ -49,6 +53,13 @@ util.extend( Debt.prototype, {
 			this._initModules();
 			callback( null );
 		}.bind( this ));
+	},
+
+	_checkRequiredOptions: function() {
+		if ( !this.options.database || !this.options.database.host || !this.options.database.user ||
+				!this.options.database.database ) {
+			return new Error( "Missing required database settings." );
+		}
 	},
 
 	_initModules: function() {
