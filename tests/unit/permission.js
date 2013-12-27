@@ -9,6 +9,18 @@ exports.register = {
 		done();
 	},
 
+	"native permissions": function( test ) {
+		test.expect( 1 );
+
+		test.deepEqual( this.permission.permissions, {
+			DEBT: [ "ADMIN" ],
+			TICKET: [ "ADMIN", "CREATE", "EDIT", "DELETE" ],
+			GROUP: [ "ADMIN", "CREATE", "DELETE" ],
+			PERMISSION: [ "ADMIN", "GRANT", "REVOKE" ]
+		}, "Should have all native permissions" );
+		test.done();
+	},
+
 	"missing component": function( test ) {
 		test.expect( 1 );
 
