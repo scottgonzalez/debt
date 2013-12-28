@@ -51,7 +51,14 @@ util.extend( Debt.prototype, {
 
 			this.database = database;
 			this._initModules();
-			callback( null );
+			this._getState(function( error, state ) {
+				if ( error ) {
+					return callback( error );
+				}
+
+				this.state = state;
+				callback( null );
+			}.bind( this ));
 		}.bind( this ));
 	},
 
@@ -75,6 +82,30 @@ util.extend( Debt.prototype, {
 
 		// Initialize auth provider
 		this.auth.init();
+	},
+
+	_getState: function( callback ) {
+		this.database.query( "SELECT COUNT(*) AS `count` FROM `users`", function( error, rows ) {
+			var state;
+
+			if ( error ) {
+				if ( error.code !== "ER_NO_SUCH_TABLE" ) {
+					return callback( error );
+				}
+
+				state = "database-setup";
+			}
+
+			if ( !state ) {
+				if ( !rows[ 0 ].count ) {
+					state = "user-setup";
+				} else {
+					state = "installed";
+				}
+			}
+
+			callback( null, state );
+		});
 	},
 
 	install: function( callback ) {
