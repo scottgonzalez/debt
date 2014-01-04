@@ -1,4 +1,4 @@
-var Group = require( "../../lib/group" ).Group;
+var Group = require( "../../../lib/group" ).Group;
 
 exports.create = {
 	setUp: function( done ) {

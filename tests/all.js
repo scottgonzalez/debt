@@ -35,7 +35,7 @@ function unitTests( callback ) {
 	var reporter = nodeunit.reporters.default;
 	var options = require( "nodeunit/bin/nodeunit.json" );
 
-	reporter.run([ "tests/unit" ], options, callback );
+	reporter.run([ "tests/unit/lib", "tests/unit/model" ], options, callback );
 }
 
 function checkDco( callback ) {

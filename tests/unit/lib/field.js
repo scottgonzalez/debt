@@ -1,5 +1,5 @@
-var FieldManager = require( "../../lib/field" ).FieldManager;
-var Field = require( "../../lib/field" ).Field;
+var FieldManager = require( "../../../lib/field" ).FieldManager;
+var Field = require( "../../../model/field" ).Field;
 
 exports.register = {
 	setUp: function( done ) {
@@ -202,27 +202,21 @@ exports.create = {
 
 exports.get = {
 	setUp: function( done ) {
-		this._getSettings = Field.prototype.getSettings;
-
-		this.app = {};
+		this.app = {
+			database: {}
+		};
 		this.fieldManager = new FieldManager( this.app );
 		done();
 	},
 
-	tearDown: function( done ) {
-		Field.prototype.getSettings = this._getSettings;
-
-		done();
-	},
-
-	"getSettings error": function( test ) {
+	"database query error": function( test ) {
 		test.expect( 3 );
 
-		var providedApp = this.app;
-
-		Field.prototype.getSettings = function( callback ) {
-			test.strictEqual( this.app, providedApp, "Should pass app to field." );
-			test.equal( this.id, 37, "Should pass id to field." );
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `fields` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -235,14 +229,84 @@ exports.get = {
 		});
 	},
 
-	"invalid type": function( test ) {
+	"unknown field": function( test ) {
 		test.expect( 3 );
 
-		var providedApp = this.app;
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `fields` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
 
-		Field.prototype.getSettings = function( callback ) {
-			test.strictEqual( this.app, providedApp, "Should pass app to field." );
-			test.equal( this.id, 37, "Should pass id to field." );
+			process.nextTick(function() {
+				callback( null, [] );
+			});
+		};
+
+		this.fieldManager.get( 37, function( error ) {
+			test.equal( error.message, "Unknown field id: 37", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"existing field": function( test ) {
+		test.expect( 4 );
+
+		var providedSettings = {
+			id: 37,
+			type: "text",
+			label: "my field",
+			config: "custom config"
+		};
+
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `fields` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [ providedSettings ]);
+			});
+		};
+
+		this.fieldManager.get( 37, function( error, settings ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+			test.done();
+		});
+	}
+};
+
+exports.getInstance = {
+	setUp: function( done ) {
+		this.app = {};
+		this.fieldManager = new FieldManager( this.app );
+		done();
+	},
+
+	"get error": function( test ) {
+		test.expect( 2 );
+
+		this.fieldManager.get = function( id, callback ) {
+			test.equal( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.fieldManager.getInstance( 37, function( error ) {
+			test.equal( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"invalid type": function( test ) {
+		test.expect( 2 );
+
+		this.fieldManager.get = function( id, callback ) {
+			test.equal( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( null, {
@@ -254,7 +318,7 @@ exports.get = {
 			});
 		};
 
-		this.fieldManager.get( 37, function( error ) {
+		this.fieldManager.getInstance( 37, function( error ) {
 			test.equal( error.message, "Invalid `type` (fake) for field 37.",
 				"Should pass the error." );
 			test.done();
@@ -262,7 +326,7 @@ exports.get = {
 	},
 
 	"init error": function( test ) {
-		test.expect( 6 );
+		test.expect( 5 );
 
 		var providedApp = this.app;
 		var providedSettings = {
@@ -272,9 +336,8 @@ exports.get = {
 			config: ""
 		};
 
-		Field.prototype.getSettings = function( callback ) {
-			test.strictEqual( this.app, providedApp, "Should pass app to field." );
-			test.equal( this.id, 37, "Should pass id to field." );
+		this.fieldManager.get = function( id, callback ) {
+			test.equal( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -294,7 +357,7 @@ exports.get = {
 			};
 		};
 
-		this.fieldManager.get( 37, function( error ) {
+		this.fieldManager.getInstance( 37, function( error ) {
 			test.equal( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
@@ -312,7 +375,7 @@ exports.get = {
 			config: ""
 		};
 
-		Field.prototype.getSettings = function( callback ) {
+		this.fieldManager.get = function( id, callback ) {
 			process.nextTick(function() {
 				callback( null, providedSettings );
 			});
@@ -333,7 +396,7 @@ exports.get = {
 			};
 		};
 
-		this.fieldManager.get( 37, function( error, instance ) {
+		this.fieldManager.getInstance( 37, function( error, instance ) {
 			test.equal( error, null, "Should not pass an error." );
 			test.strictEqual( instance, fakeInstance, "Should pass field instance." );
 			test.done();

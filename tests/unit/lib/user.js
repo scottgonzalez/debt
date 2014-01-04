@@ -1,4 +1,4 @@
-var User = require( "../../lib/user" ).User;
+var User = require( "../../../lib/user" ).User;
 
 exports.create = {
 	setUp: function( done ) {

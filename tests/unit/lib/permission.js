@@ -1,4 +1,4 @@
-var Permission = require( "../../lib/permission" ).Permission;
+var Permission = require( "../../../lib/permission" ).Permission;
 
 exports.register = {
 	setUp: function( done ) {

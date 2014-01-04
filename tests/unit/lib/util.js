@@ -1,4 +1,4 @@
-var util = require( "../../lib/util" );
+var util = require( "../../../lib/util" );
 
 exports.delay = {
 	"no parameters": function( test ) {

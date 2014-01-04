@@ -1,4 +1,4 @@
-var Ticket = require( "../../lib/ticket" ).Ticket;
+var Ticket = require( "../../../lib/ticket" ).Ticket;
 
 exports.create = {
 	setUp: function( done ) {
