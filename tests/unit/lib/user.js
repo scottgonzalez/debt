@@ -1,18 +1,19 @@
-var User = require( "../../../lib/user" ).User;
+var UserManager = require( "../../../lib/user" ).UserManager;
+var User = require( "../../../model/user" ).User;
 
 exports.create = {
 	setUp: function( done ) {
 		this.app = {
 			database: {}
 		};
-		this.user = new User( this.app );
+		this.userManager = new UserManager( this.app );
 		done();
 	},
 
 	"missing username": function( test ) {
 		test.expect( 1 );
 
-		this.user.create({
+		this.userManager.create({
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
@@ -25,7 +26,7 @@ exports.create = {
 	"invalid username": function( test ) {
 		test.expect( 1 );
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt collector",
 			email: "dc@example.com",
 			name: "Debt Collector"
@@ -39,7 +40,7 @@ exports.create = {
 	"missing email": function( test ) {
 		test.expect( 1 );
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt-collector",
 			name: "Debt Collector"
 		}, function( error ) {
@@ -52,7 +53,7 @@ exports.create = {
 	"invalid email": function( test ) {
 		test.expect( 1 );
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt-collector",
 			email: "dc",
 			name: "Debt Collector"
@@ -66,7 +67,7 @@ exports.create = {
 	"api key generation error": function( test ) {
 		test.expect( 2 );
 
-		this.user._createApiKey = function( callback ) {
+		this.userManager._createApiKey = function( callback ) {
 			test.ok( true, "Should create an API key." );
 
 			process.nextTick(function() {
@@ -74,7 +75,7 @@ exports.create = {
 			});
 		};
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt-collector",
 			email: "dc@example.com",
 			name: "Debt Collector"
@@ -107,7 +108,7 @@ exports.create = {
 			});
 		};
 
-		this.user._createApiKey = function( callback ) {
+		this.userManager._createApiKey = function( callback ) {
 			test.ok( true, "Should create an API key." );
 
 			process.nextTick(function() {
@@ -115,7 +116,7 @@ exports.create = {
 			});
 		};
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt-collector",
 			email: "dc@example.com",
 			name: "Debt Collector"
@@ -147,7 +148,7 @@ exports.create = {
 			});
 		};
 
-		this.user._createApiKey = function( callback ) {
+		this.userManager._createApiKey = function( callback ) {
 			test.ok( true, "Should create an API key." );
 
 			process.nextTick(function() {
@@ -155,7 +156,7 @@ exports.create = {
 			});
 		};
 
-		this.user.create({
+		this.userManager.create({
 			username: "debt-collector",
 			email: "dc@example.com",
 			name: "Debt Collector"
@@ -172,14 +173,14 @@ exports.get = {
 		this.app = {
 			database: {}
 		};
-		this.user = new User( this.app );
+		this.userManager = new UserManager( this.app );
 		done();
 	},
 
 	"missing id": function( test ) {
 		test.expect( 1 );
 
-		this.user.get( null, function( error ) {
+		this.userManager.get( null, function( error ) {
 			test.equal( error.message, "Missing required parameter `id`.",
 				"Should throw for missing id." );
 			test.done();
@@ -200,7 +201,7 @@ exports.get = {
 			});
 		};
 
-		this.user.get( 37, function( error ) {
+		this.userManager.get( 37, function( error ) {
 			test.equal( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
@@ -228,7 +229,7 @@ exports.get = {
 			});
 		};
 
-		this.user.get( 37, function( error, user ) {
+		this.userManager.get( 37, function( error, user ) {
 			test.equal( error, null, "Should not pass an error." );
 			test.strictEqual( user, providedUser, "Should pass user." );
 			test.done();
@@ -241,14 +242,14 @@ exports.getByUsername = {
 		this.app = {
 			database: {}
 		};
-		this.user = new User( this.app );
+		this.userManager = new UserManager( this.app );
 		done();
 	},
 
 	"missing username": function( test ) {
 		test.expect( 1 );
 
-		this.user.getByUsername( null, function( error ) {
+		this.userManager.getByUsername( null, function( error ) {
 			test.equal( error.message, "Missing required parameter `username`.",
 				"Should throw for missing username." );
 			test.done();
@@ -270,7 +271,7 @@ exports.getByUsername = {
 			});
 		};
 
-		this.user.getByUsername( "debt-collector", function( error ) {
+		this.userManager.getByUsername( "debt-collector", function( error ) {
 			test.equal( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
@@ -299,9 +300,269 @@ exports.getByUsername = {
 			});
 		};
 
-		this.user.getByUsername( "debt-collector", function( error, user ) {
+		this.userManager.getByUsername( "debt-collector", function( error, user ) {
 			test.equal( error, null, "Should not pass an error." );
 			test.strictEqual( user, providedUser, "Should pass user." );
+			test.done();
+		});
+	}
+};
+
+
+exports.getInstance = {
+	setUp: function( done ) {
+		this.app = {};
+		this.userManager = new UserManager( this.app );
+		done();
+	},
+
+	"get error": function( test ) {
+		test.expect( 2 );
+
+		this.userManager.get = function( id, callback ) {
+			test.equal( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.userManager.getInstance( 37, function( error ) {
+			test.equal( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"init error": function( test ) {
+		test.expect( 3 );
+
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		this.userManager.get = function( id, callback ) {
+			test.equal( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		this.userManager._getInstance = function( settings, callback ) {
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			process.nextTick(function() {
+				callback( new Error( "bad init" ) );
+			});
+		};
+
+		this.userManager.getInstance( 37, function( error ) {
+			test.equal( error.message, "bad init", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid user": function( test ) {
+		test.expect( 3 );
+
+		var fakeInstance;
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		this.userManager.get = function( id, callback ) {
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		this.userManager._getInstance = function( settings, callback ) {
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			fakeInstance = {};
+			process.nextTick(function() {
+				callback( null, fakeInstance );
+			});
+		};
+
+		this.userManager.getInstance( 37, function( error, instance ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( instance, fakeInstance, "Should pass user instance." );
+			test.done();
+		});
+	}
+};
+
+exports.getInstanceByUsername = {
+	setUp: function( done ) {
+		this.app = {};
+		this.userManager = new UserManager( this.app );
+		done();
+	},
+
+	"get error": function( test ) {
+		test.expect( 2 );
+
+		this.userManager.getByUsername = function( username, callback ) {
+			test.equal( username, "debt-collector", "Should pass username." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.userManager.getInstanceByUsername( "debt-collector", function( error ) {
+			test.equal( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"init error": function( test ) {
+		test.expect( 3 );
+
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		this.userManager.getByUsername = function( username, callback ) {
+			test.equal( username, "debt-collector", "Should pass username." );
+
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		this.userManager._getInstance = function( settings, callback ) {
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			process.nextTick(function() {
+				callback( new Error( "bad init" ) );
+			});
+		};
+
+		this.userManager.getInstanceByUsername( "debt-collector", function( error ) {
+			test.equal( error.message, "bad init", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid user": function( test ) {
+		test.expect( 3 );
+
+		var fakeInstance;
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		this.userManager.getByUsername = function( username, callback ) {
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		this.userManager._getInstance = function( settings, callback ) {
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			fakeInstance = {};
+			process.nextTick(function() {
+				callback( null, fakeInstance );
+			});
+		};
+
+		this.userManager.getInstanceByUsername( "debt-collector", function( error, instance ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( instance, fakeInstance, "Should pass user instance." );
+			test.done();
+		});
+	}
+};
+
+exports._getInstance = {
+	setUp: function( done ) {
+		this._initFromSettings = User.prototype.initFromSettings;
+
+		this.app = {};
+		this.userManager = new UserManager( this.app );
+		done();
+	},
+
+	tearDown: function( done ) {
+		User.prototype.initFromSettings = this._initFromSettings;
+		done();
+	},
+
+	"init error": function( test ) {
+		test.expect( 4 );
+
+		var providedApp = this.app;
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		User.prototype.initFromSettings = function( settings, callback ) {
+			test.strictEqual( this.app, providedApp, "Should pass app to user." );
+			test.equal( this.id, 37, "Should pass id to user." );
+			test.strictEqual( settings, providedSettings, "Should pass settings to user." );
+
+			process.nextTick(function() {
+				callback( new Error( "bad init" ) );
+			});
+		};
+
+		this.userManager._getInstance( providedSettings, function( error, user ) {
+			test.equal( error.message, "bad init", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid user": function( test ) {
+		test.expect( 5 );
+
+		var instance;
+		var providedApp = this.app;
+		var providedSettings = {
+			id: 37,
+			username: "debt-collector",
+			email: "dc@example.com",
+			name: "Debt Collector",
+			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		};
+
+		User.prototype.initFromSettings = function( settings, callback ) {
+			instance = this;
+
+			test.strictEqual( this.app, providedApp, "Should pass app to user." );
+			test.equal( this.id, 37, "Should pass id to user." );
+			test.strictEqual( settings, providedSettings, "Should pass settings to user." );
+
+			process.nextTick(function() {
+				callback( null );
+			});
+		};
+
+		this.userManager._getInstance( providedSettings, function( error, user ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( user, instance, "Should pass user instance." );
 			test.done();
 		});
 	}
@@ -311,11 +572,11 @@ exports._createApiKey = {
 	"creation": function( test ) {
 		test.expect( 5 );
 
-		User.prototype._createApiKey(function( error, firstKey ) {
+		UserManager.prototype._createApiKey(function( error, firstKey ) {
 			test.equal( error, null, "Should not pass an error." );
 			test.ok( /^[a-f0-9]{40}$/.test( firstKey ), "Should produce a sha1 hash." );
 
-			User.prototype._createApiKey(function( error, key ) {
+			UserManager.prototype._createApiKey(function( error, key ) {
 				test.equal( error, null, "Should not pass an error." );
 				test.ok( /^[a-f0-9]{40}$/.test( key ), "Should produce a sha1 hash." );
 				test.notEqual( key, firstKey, "Should produce a unique key." );
