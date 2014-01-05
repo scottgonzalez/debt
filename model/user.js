@@ -35,5 +35,14 @@ util.extend( User.prototype, {
 		process.nextTick(function() {
 			callback( null );
 		});
+	},
+
+	toJSON: function() {
+		return {
+			id: this.id,
+			username: this.username,
+			email: this.email,
+			name: this.name
+		};
 	}
 });
