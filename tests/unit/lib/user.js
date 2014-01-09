@@ -11,55 +11,65 @@ exports.create = {
 	},
 
 	"missing username": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.userManager.create({
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `username`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `username`.",
 				"Should throw for missing username." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "username", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"invalid username": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		this.userManager.create({
 			username: "debt collector",
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "Invalid `username`.",
+			test.equal( error.message, "E_INVALID_DATA: Invalid `username` (debt collector).",
 				"Should throw for invalid username." );
+			test.equal( error.code, "E_INVALID_DATA" );
+			test.equal( error.field, "username", "Should pass field name with error." );
+			test.equal( error.username, "debt collector", "Should pass username with error." );
 			test.done();
 		});
 	},
 
 	"missing email": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.userManager.create({
 			username: "debt-collector",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `email`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `email`.",
 				"Should throw for missing email." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "email", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"invalid email": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		this.userManager.create({
 			username: "debt-collector",
 			email: "dc",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "Invalid `email`.",
+			test.equal( error.message, "E_INVALID_DATA: Invalid `email` (dc).",
 				"Should throw for invalid email." );
+			test.equal( error.code, "E_INVALID_DATA" );
+			test.equal( error.field, "email", "Should pass field name with error." );
+			test.equal( error.email, "dc", "Should pass email with error." );
 			test.done();
 		});
 	},
@@ -178,11 +188,13 @@ exports.get = {
 	},
 
 	"missing id": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.userManager.get( null, function( error ) {
-			test.equal( error.message, "Missing required parameter `id`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "id", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -203,6 +215,29 @@ exports.get = {
 
 		this.userManager.get( 37, function( error ) {
 			test.equal( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"not found": function( test ) {
+		test.expect( 5 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `users` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [] );
+			});
+		};
+
+		this.userManager.get( 37, function( error ) {
+			test.equal( error.message, "E_NOT_FOUND: Unknown user id: 37",
+				"Should pass the error." );
+			test.equal( error.code, "E_NOT_FOUND" );
+			test.equal( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
@@ -247,11 +282,13 @@ exports.getByUsername = {
 	},
 
 	"missing username": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.userManager.getByUsername( null, function( error ) {
-			test.equal( error.message, "Missing required parameter `username`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `username`.",
 				"Should throw for missing username." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "username", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -277,7 +314,7 @@ exports.getByUsername = {
 		});
 	},
 
-	"no user": function( test ) {
+	"not found": function( test ) {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
@@ -479,7 +516,7 @@ exports.getInstanceByUsername = {
 		});
 	},
 
-	"no user": function( test ) {
+	"not found": function( test ) {
 		test.expect( 3 );
 
 		this.userManager.getByUsername = function( username, callback ) {
@@ -491,8 +528,8 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error, user ) {
-			test.equal( error, null, "Should no pass an error." );
-			test.equal( user, null, "Should no pass a user." );
+			test.equal( error, null, "Should not pass an error." );
+			test.equal( user, null, "Should not pass a user." );
 			test.done();
 		});
 	},
