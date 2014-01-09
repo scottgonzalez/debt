@@ -22,52 +22,79 @@ exports.register = {
 	},
 
 	"missing component": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		test.throws(
 			function() {
 				this.permission.register( null, "CREATE" );
 			}.bind( this ),
-			/^Missing required parameter `component`\.$/,
+			function( error ) {
+				test.equal( error.message,
+					"E_MISSING_DATA: Missing required parameter `component`." );
+				test.equal( error.code, "E_MISSING_DATA" );
+				test.equal( error.field, "component", "Should pass field name with error." );
+				return true;
+			},
 			"Should throw for missing component."
 		);
 		test.done();
 	},
 
 	"invalid component": function( test ) {
-		test.expect( 1 );
+		test.expect( 5 );
 
 		test.throws(
 			function() {
 				this.permission.register( "test component", "CREATE" );
 			}.bind( this ),
-			/^Invalid `component` \(test component\)\.$/,
+			function( error ) {
+				test.equal( error.message,
+					"E_INVALID_DATA: Invalid `component` (test component)." );
+				test.equal( error.code, "E_INVALID_DATA" );
+				test.equal( error.field, "component", "Should pass field name with error." );
+				test.equal( error.component, "test component",
+					"Should pass component with error." );
+				return true;
+			},
 			"Should throw for invalid component."
 		);
 		test.done();
 	},
 
 	"missing action": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		test.throws(
 			function() {
 				this.permission.register( "TEST-COMPONENT", null );
 			}.bind( this ),
-			/^Missing required parameter `action`\.$/,
+			function( error ) {
+				test.equal( error.message,
+					"E_MISSING_DATA: Missing required parameter `action`." );
+				test.equal( error.code, "E_MISSING_DATA" );
+				test.equal( error.field, "action", "Should pass field name with error." );
+				return true;
+			},
 			"Should throw for missing action."
 		);
 		test.done();
 	},
 
 	"invalid action": function( test ) {
-		test.expect( 1 );
+		test.expect( 5 );
 
 		test.throws(
 			function() {
 				this.permission.register( "TEST-COMPONENT", "test action" );
 			}.bind( this ),
-			/^Invalid `action` \(test action\)\.$/,
+			function( error ) {
+				test.equal( error.message,
+					"E_INVALID_DATA: Invalid `action` (test action)." );
+				test.equal( error.code, "E_INVALID_DATA" );
+				test.equal( error.field, "action", "Should pass field name with error." );
+				test.equal( error.action, "test action", "Should pass action with error." );
+				return true;
+			},
 			"Should throw for invalid action."
 		);
 		test.done();
@@ -100,21 +127,25 @@ exports.grantToUser = {
 	},
 
 	"missing userId": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.permission.grantToUser( null, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "Missing required parameter `userId`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `userId`.",
 				"Should throw for missing userId." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "userId", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"missing permission": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.permission.grantToUser( 37, null, function( error ) {
-			test.equal( error.message, "Missing required parameter `permission`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `permission`.",
 				"Should throw for missing permission." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "permission", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -168,21 +199,25 @@ exports.grantToGroup = {
 	},
 
 	"missing userId": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.permission.grantToGroup( null, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "Missing required parameter `groupId`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `groupId`.",
 				"Should throw for missing groupId." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "groupId", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"missing permission": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.permission.grantToGroup( 37, null, function( error ) {
-			test.equal( error.message, "Missing required parameter `permission`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `permission`.",
 				"Should throw for missing permission." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "permission", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -263,11 +298,14 @@ exports._grant = {
 	},
 
 	"invalid permission": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		this.permission._grant( "user", 37, [ "+" ], function( error ) {
-			test.equal( error.message, "Invalid permission (+).",
+			test.equal( error.message, "E_INVALID_DATA: Invalid permission (+).",
 				"Should throw for invalid permission." );
+			test.equal( error.code, "E_INVALID_DATA" );
+			test.equal( error.field, "permission", "Should pass field name with error." );
+			test.equal( error.permission, "+", "Should pass permission with error." );
 			test.done();
 		});
 	},
