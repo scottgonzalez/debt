@@ -10,27 +10,31 @@ exports.create = {
 	},
 
 	"missing title": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.ticket.create({
 			body: "some description",
 			userId: 37
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `title`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `title`.",
 				"Should throw for missing title." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "title", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"missing userId": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.ticket.create({
 			title: "my ticket",
 			body: "some description"
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `userId`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `userId`.",
 				"Should throw for missing userId." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "userId", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -146,11 +150,35 @@ exports.get = {
 	},
 
 	"missing id": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.ticket.get( null, function( error) {
-			test.equal( error.message, "Missing required parameter `id`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "id", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"not found": function( test ) {
+		test.expect( 4 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `tickets` WHERE `id` = ?",
+				"Query should select values by id." );
+			test.deepEqual( values, [ 37 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [] );
+			});
+		};
+
+		this.ticket.get( 37, function( error, ticket ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.equal( ticket, null, "Should not pass a ticket." );
 			test.done();
 		});
 	},
