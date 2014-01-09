@@ -16,10 +16,10 @@ exports.create = {
 			body: "some description",
 			userId: 37
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `title`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `title`.",
 				"Should throw for missing title." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "title", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "title", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -31,10 +31,10 @@ exports.create = {
 			title: "my ticket",
 			body: "some description"
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `userId`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `userId`.",
 				"Should throw for missing userId." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "userId", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "userId", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -43,7 +43,7 @@ exports.create = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `tickets` SET " +
 					"`title` = ?," +
 					"`body` = ?," +
@@ -64,7 +64,7 @@ exports.create = {
 			body: "some description",
 			userId: 37
 		}, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -73,7 +73,7 @@ exports.create = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `tickets` SET " +
 					"`title` = ?," +
 					"`body` = ?," +
@@ -94,8 +94,8 @@ exports.create = {
 			body: "some description",
 			userId: 37
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 99, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 99, "Should return inserted id." );
 			test.done();
 		});
 	},
@@ -111,7 +111,7 @@ exports.create = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `tickets` SET " +
 					"`title` = ?," +
 					"`body` = ?," +
@@ -133,8 +133,8 @@ exports.create = {
 			userId: 37,
 			created: new Date( "Mon Nov 4 2013 11:01:54 -0500" )
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 99, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 99, "Should return inserted id." );
 			test.done();
 		});
 	}
@@ -153,10 +153,10 @@ exports.get = {
 		test.expect( 3 );
 
 		this.ticket.get( null, function( error) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "id", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "id", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -165,7 +165,7 @@ exports.get = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `tickets` WHERE `id` = ?",
 				"Query should select values by id." );
 			test.deepEqual( values, [ 37 ],
@@ -177,8 +177,8 @@ exports.get = {
 		};
 
 		this.ticket.get( 37, function( error, ticket ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( ticket, null, "Should not pass a ticket." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( ticket, null, "Should not pass a ticket." );
 			test.done();
 		});
 	},
@@ -195,7 +195,7 @@ exports.get = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `tickets` WHERE `id` = ?",
 				"Query should select values by id." );
 			test.deepEqual( values, [ 37 ],
@@ -207,7 +207,7 @@ exports.get = {
 		};
 
 		this.ticket.get( 37, function( error, ticket ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( ticket, providedTicket, "Should pass ticket." );
 			test.done();
 		});

@@ -18,9 +18,10 @@ exports.register = {
 				this.fieldManager.register( null, {} );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message, "E_MISSING_DATA: Missing required parameter `type`." );
-				test.equal( error.code, "E_MISSING_DATA" );
-				test.equal( error.field, "type", "Should pass field name with error." );
+				test.strictEqual( error.message,
+					"E_MISSING_DATA: Missing required parameter `type`." );
+				test.strictEqual( error.code, "E_MISSING_DATA" );
+				test.strictEqual( error.field, "type", "Should pass field name with error." );
 				return true;
 			},
 			"Should throw for missing type."
@@ -36,10 +37,10 @@ exports.register = {
 				this.fieldManager.register( "test type", {} );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message, "E_INVALID_DATA: Invalid `type` (test type)." );
-				test.equal( error.code, "E_INVALID_DATA" );
-				test.equal( error.field, "type", "Should pass field name with error." );
-				test.equal( error.type, "test type", "Should pass type with error." );
+				test.strictEqual( error.message, "E_INVALID_DATA: Invalid `type` (test type)." );
+				test.strictEqual( error.code, "E_INVALID_DATA" );
+				test.strictEqual( error.field, "type", "Should pass field name with error." );
+				test.strictEqual( error.type, "test type", "Should pass type with error." );
 				return true;
 			},
 			"Should throw for invalid type."
@@ -59,7 +60,7 @@ exports.register = {
 		test.ok( Constructor, "Constructor should be stored in FieldManager.types." );
 		test.strictEqual( Constructor.super_, Field,
 			"Constructor should inherit from Field." );
-		test.equal( Constructor.prototype.testProp, "test value",
+		test.strictEqual( Constructor.prototype.testProp, "test value",
 			"Prototype should pass through." );
 		test.done();
 	}
@@ -80,10 +81,10 @@ exports.create = {
 		this.fieldManager.create({
 			label: "my field"
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `type`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `type`.",
 				"Should throw for missing type." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "type", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "type", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -95,11 +96,11 @@ exports.create = {
 			type: "fake",
 			label: "my field"
 		}, function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid `type` (fake).",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `type` (fake).",
 				"Should throw for invalid type." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "type", "Should pass field name with error." );
-			test.equal( error.type, "fake", "Should pass type with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "type", "Should pass field name with error." );
+			test.strictEqual( error.type, "fake", "Should pass type with error." );
 			test.done();
 		});
 	},
@@ -110,10 +111,10 @@ exports.create = {
 		this.fieldManager.create({
 			type: "text"
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `label`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `label`.",
 				"Should throw for missing label." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "label", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "label", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -127,11 +128,11 @@ exports.create = {
 			type: "text",
 			label: label
 		}, function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid `label` (" + label + ").",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `label` (" + label + ").",
 				"Should throw for invalid label." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "label", "Should pass field name with error." );
-			test.equal( error.label, label, "Should pass label with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "label", "Should pass field name with error." );
+			test.strictEqual( error.label, label, "Should pass label with error." );
 			test.done();
 		});
 	},
@@ -140,7 +141,7 @@ exports.create = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `fields` SET " +
 					"`type` = ?," +
 					"`label` = ?," +
@@ -158,7 +159,7 @@ exports.create = {
 			type: "text",
 			label: "my field"
 		}, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -167,7 +168,7 @@ exports.create = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `fields` SET " +
 					"`type` = ?," +
 					"`label` = ?," +
@@ -185,8 +186,8 @@ exports.create = {
 			type: "text",
 			label: "my field"
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 37, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 37, "Should return inserted id." );
 			test.done();
 		});
 	},
@@ -195,7 +196,7 @@ exports.create = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `fields` SET " +
 					"`type` = ?," +
 					"`label` = ?," +
@@ -214,8 +215,8 @@ exports.create = {
 			label: "my field",
 			config: "custom config"
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 37, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 37, "Should return inserted id." );
 			test.done();
 		});
 	}
@@ -234,10 +235,10 @@ exports.get = {
 		test.expect( 3 );
 
 		this.fieldManager.get( null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "id", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "id", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -246,7 +247,7 @@ exports.get = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `fields` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -257,7 +258,7 @@ exports.get = {
 		};
 
 		this.fieldManager.get( 37, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -266,7 +267,7 @@ exports.get = {
 		test.expect( 5 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `fields` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -277,10 +278,10 @@ exports.get = {
 		};
 
 		this.fieldManager.get( 37, function( error ) {
-			test.equal( error.message, "E_NOT_FOUND: Unknown field id: 37",
+			test.strictEqual( error.message, "E_NOT_FOUND: Unknown field id: 37",
 				"Should pass the error." );
-			test.equal( error.code, "E_NOT_FOUND" );
-			test.equal( error.id, 37, "Should pass id with error." );
+			test.strictEqual( error.code, "E_NOT_FOUND" );
+			test.strictEqual( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
@@ -296,7 +297,7 @@ exports.get = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `fields` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -307,7 +308,7 @@ exports.get = {
 		};
 
 		this.fieldManager.get( 37, function( error, settings ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( settings, providedSettings, "Should pass settings." );
 			test.done();
 		});
@@ -325,7 +326,7 @@ exports.getInstance = {
 		test.expect( 2 );
 
 		this.fieldManager.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id." );
+			test.strictEqual( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -333,7 +334,7 @@ exports.getInstance = {
 		};
 
 		this.fieldManager.getInstance( 37, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -342,7 +343,7 @@ exports.getInstance = {
 		test.expect( 2 );
 
 		this.fieldManager.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id." );
+			test.strictEqual( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( null, {
@@ -355,7 +356,7 @@ exports.getInstance = {
 		};
 
 		this.fieldManager.getInstance( 37, function( error ) {
-			test.equal( error.message, "Invalid `type` (fake) for field 37.",
+			test.strictEqual( error.message, "Invalid `type` (fake) for field 37.",
 				"Should pass the error." );
 			test.done();
 		});
@@ -373,7 +374,7 @@ exports.getInstance = {
 		};
 
 		this.fieldManager.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id." );
+			test.strictEqual( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -382,7 +383,7 @@ exports.getInstance = {
 
 		this.fieldManager.types.fake = function( app, id ) {
 			test.strictEqual( app, providedApp, "Should pass app to field." );
-			test.equal( id, 37, "Should pass id to field." );
+			test.strictEqual( id, 37, "Should pass id to field." );
 
 			this.initFromSettings = function( settings, callback ) {
 				test.strictEqual( settings, providedSettings, "Should pass settings." );
@@ -394,7 +395,7 @@ exports.getInstance = {
 		};
 
 		this.fieldManager.getInstance( 37, function( error ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -421,7 +422,7 @@ exports.getInstance = {
 			fakeInstance = this;
 
 			test.strictEqual( app, providedApp, "Should pass app to field." );
-			test.equal( id, 37, "Should pass id to field." );
+			test.strictEqual( id, 37, "Should pass id to field." );
 
 			this.initFromSettings = function( settings, callback ) {
 				test.strictEqual( settings, providedSettings, "Should pass settings." );
@@ -433,7 +434,7 @@ exports.getInstance = {
 		};
 
 		this.fieldManager.getInstance( 37, function( error, instance ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( instance, fakeInstance, "Should pass field instance." );
 			test.done();
 		});

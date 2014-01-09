@@ -29,10 +29,10 @@ exports.register = {
 				this.permission.register( null, "CREATE" );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message,
+				test.strictEqual( error.message,
 					"E_MISSING_DATA: Missing required parameter `component`." );
-				test.equal( error.code, "E_MISSING_DATA" );
-				test.equal( error.field, "component", "Should pass field name with error." );
+				test.strictEqual( error.code, "E_MISSING_DATA" );
+				test.strictEqual( error.field, "component", "Should pass field name with error." );
 				return true;
 			},
 			"Should throw for missing component."
@@ -48,11 +48,11 @@ exports.register = {
 				this.permission.register( "test component", "CREATE" );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message,
+				test.strictEqual( error.message,
 					"E_INVALID_DATA: Invalid `component` (test component)." );
-				test.equal( error.code, "E_INVALID_DATA" );
-				test.equal( error.field, "component", "Should pass field name with error." );
-				test.equal( error.component, "test component",
+				test.strictEqual( error.code, "E_INVALID_DATA" );
+				test.strictEqual( error.field, "component", "Should pass field name with error." );
+				test.strictEqual( error.component, "test component",
 					"Should pass component with error." );
 				return true;
 			},
@@ -69,10 +69,10 @@ exports.register = {
 				this.permission.register( "TEST-COMPONENT", null );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message,
+				test.strictEqual( error.message,
 					"E_MISSING_DATA: Missing required parameter `action`." );
-				test.equal( error.code, "E_MISSING_DATA" );
-				test.equal( error.field, "action", "Should pass field name with error." );
+				test.strictEqual( error.code, "E_MISSING_DATA" );
+				test.strictEqual( error.field, "action", "Should pass field name with error." );
 				return true;
 			},
 			"Should throw for missing action."
@@ -88,11 +88,11 @@ exports.register = {
 				this.permission.register( "TEST-COMPONENT", "test action" );
 			}.bind( this ),
 			function( error ) {
-				test.equal( error.message,
+				test.strictEqual( error.message,
 					"E_INVALID_DATA: Invalid `action` (test action)." );
-				test.equal( error.code, "E_INVALID_DATA" );
-				test.equal( error.field, "action", "Should pass field name with error." );
-				test.equal( error.action, "test action", "Should pass action with error." );
+				test.strictEqual( error.code, "E_INVALID_DATA" );
+				test.strictEqual( error.field, "action", "Should pass field name with error." );
+				test.strictEqual( error.action, "test action", "Should pass action with error." );
 				return true;
 			},
 			"Should throw for invalid action."
@@ -130,10 +130,10 @@ exports.grantToUser = {
 		test.expect( 3 );
 
 		this.permission.grantToUser( null, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `userId`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `userId`.",
 				"Should throw for missing userId." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "userId", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "userId", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -142,10 +142,11 @@ exports.grantToUser = {
 		test.expect( 3 );
 
 		this.permission.grantToUser( 37, null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `permission`.",
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `permission`.",
 				"Should throw for missing permission." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "permission", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "permission", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -154,8 +155,8 @@ exports.grantToUser = {
 		test.expect( 4 );
 
 		this.permission._grant = function( type, id, permissions, callback ) {
-			test.equal( type, "user", "Should set correct type." );
-			test.equal( id, 37, "Should pass userId." );
+			test.strictEqual( type, "user", "Should set correct type." );
+			test.strictEqual( id, 37, "Should pass userId." );
 			test.deepEqual( permissions, [ "TICKET:CREATE" ], "Should pass permissions." );
 
 			process.nextTick(function() {
@@ -164,7 +165,7 @@ exports.grantToUser = {
 		};
 
 		this.permission.grantToUser( 37, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "some error", "Should pass the error." );
+			test.strictEqual( error.message, "some error", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -173,8 +174,8 @@ exports.grantToUser = {
 		test.expect( 4 );
 
 		this.permission._grant = function( type, id, permissions, callback ) {
-			test.equal( type, "user", "Should set correct type." );
-			test.equal( id, 37, "Should pass userId." );
+			test.strictEqual( type, "user", "Should set correct type." );
+			test.strictEqual( id, 37, "Should pass userId." );
 			test.deepEqual( permissions, [ "TICKET:CREATE" ], "Should pass permissions." );
 
 			process.nextTick(function() {
@@ -183,7 +184,7 @@ exports.grantToUser = {
 		};
 
 		this.permission.grantToUser( 37, "TICKET:CREATE", function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	}
@@ -202,10 +203,11 @@ exports.grantToGroup = {
 		test.expect( 3 );
 
 		this.permission.grantToGroup( null, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `groupId`.",
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `groupId`.",
 				"Should throw for missing groupId." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "groupId", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "groupId", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -214,10 +216,11 @@ exports.grantToGroup = {
 		test.expect( 3 );
 
 		this.permission.grantToGroup( 37, null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `permission`.",
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `permission`.",
 				"Should throw for missing permission." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "permission", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "permission", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -226,8 +229,8 @@ exports.grantToGroup = {
 		test.expect( 4 );
 
 		this.permission._grant = function( type, id, permissions, callback ) {
-			test.equal( type, "group", "Should set correct type." );
-			test.equal( id, 37, "Should pass groupId." );
+			test.strictEqual( type, "group", "Should set correct type." );
+			test.strictEqual( id, 37, "Should pass groupId." );
 			test.deepEqual( permissions, [ "TICKET:CREATE" ], "Should pass permissions." );
 
 			process.nextTick(function() {
@@ -236,7 +239,7 @@ exports.grantToGroup = {
 		};
 
 		this.permission.grantToGroup( 37, "TICKET:CREATE", function( error ) {
-			test.equal( error.message, "some error", "Should pass the error." );
+			test.strictEqual( error.message, "some error", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -245,8 +248,8 @@ exports.grantToGroup = {
 		test.expect( 4 );
 
 		this.permission._grant = function( type, id, permissions, callback ) {
-			test.equal( type, "group", "Should set correct type." );
-			test.equal( id, 37, "Should pass userId." );
+			test.strictEqual( type, "group", "Should set correct type." );
+			test.strictEqual( id, 37, "Should pass userId." );
 			test.deepEqual( permissions, [ "TICKET:CREATE" ], "Should pass permissions." );
 
 			process.nextTick(function() {
@@ -255,7 +258,7 @@ exports.grantToGroup = {
 		};
 
 		this.permission.grantToGroup( 37, "TICKET:CREATE", function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	}
@@ -273,9 +276,9 @@ exports._validPermission = {
 	"invalid": function( test ) {
 		test.expect( 2 );
 
-		test.equal( this.permission._validPermission( "TEST-COMPONENT:CREATE" ), false,
+		test.strictEqual( this.permission._validPermission( "TEST-COMPONENT:CREATE" ), false,
 			"Invalid component." );
-		test.equal( this.permission._validPermission( "TICKET:TEST-ACTION" ), false,
+		test.strictEqual( this.permission._validPermission( "TICKET:TEST-ACTION" ), false,
 			"Invalid action." );
 		test.done();
 	},
@@ -283,7 +286,7 @@ exports._validPermission = {
 	"valid": function( test ) {
 		test.expect( 1 );
 
-		test.equal( this.permission._validPermission( "TICKET:CREATE" ), true );
+		test.strictEqual( this.permission._validPermission( "TICKET:CREATE" ), true );
 		test.done();
 	}
 };
@@ -301,11 +304,11 @@ exports._grant = {
 		test.expect( 4 );
 
 		this.permission._grant( "user", 37, [ "+" ], function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid permission (+).",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid permission (+).",
 				"Should throw for invalid permission." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "permission", "Should pass field name with error." );
-			test.equal( error.permission, "+", "Should pass permission with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "permission", "Should pass field name with error." );
+			test.strictEqual( error.permission, "+", "Should pass permission with error." );
 			test.done();
 		});
 	},
@@ -314,7 +317,7 @@ exports._grant = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `userPermissions` (`userId`, `permission`) VALUES " +
 					"(?, ?)",
 				"Query should insert values into database." );
@@ -327,7 +330,7 @@ exports._grant = {
 		};
 
 		this.permission._grant( "user", 37, [ "TICKET:CREATE" ], function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -336,7 +339,7 @@ exports._grant = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `userPermissions` (`userId`, `permission`) VALUES " +
 					"(?, ?)",
 				"Query should insert values into database." );
@@ -349,7 +352,7 @@ exports._grant = {
 		};
 
 		this.permission._grant( "user", 37, [ "TICKET:CREATE" ], function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	},
@@ -358,7 +361,7 @@ exports._grant = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `userPermissions` (`userId`, `permission`) VALUES " +
 					"(?, ?)," +
 					"(?, ?)," +
@@ -376,7 +379,7 @@ exports._grant = {
 		this.permission._grant( "user", 37,
 			[ "TICKET:CREATE", "TICKET:DELETE", "GROUP:CREATE" ],
 		function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	}

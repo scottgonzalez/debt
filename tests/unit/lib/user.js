@@ -17,10 +17,10 @@ exports.create = {
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `username`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `username`.",
 				"Should throw for missing username." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "username", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "username", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -33,11 +33,12 @@ exports.create = {
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid `username` (debt collector).",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `username` (debt collector).",
 				"Should throw for invalid username." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "username", "Should pass field name with error." );
-			test.equal( error.username, "debt collector", "Should pass username with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "username", "Should pass field name with error." );
+			test.strictEqual( error.username, "debt collector",
+				"Should pass username with error." );
 			test.done();
 		});
 	},
@@ -49,10 +50,10 @@ exports.create = {
 			username: "debt-collector",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `email`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `email`.",
 				"Should throw for missing email." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "email", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "email", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -65,11 +66,11 @@ exports.create = {
 			email: "dc",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid `email` (dc).",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `email` (dc).",
 				"Should throw for invalid email." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "email", "Should pass field name with error." );
-			test.equal( error.email, "dc", "Should pass email with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "email", "Should pass field name with error." );
+			test.strictEqual( error.email, "dc", "Should pass email with error." );
 			test.done();
 		});
 	},
@@ -90,7 +91,7 @@ exports.create = {
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "Hasing is fun.",
+			test.strictEqual( error.message, "Hasing is fun.",
 				"Should throw for API key generation error." );
 			test.done();
 		});
@@ -102,7 +103,7 @@ exports.create = {
 		var providedApiKey = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `users` SET " +
 					"`username` = ?," +
 					"`email` = ?," +
@@ -131,7 +132,7 @@ exports.create = {
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -142,7 +143,7 @@ exports.create = {
 		var providedApiKey = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `users` SET " +
 					"`username` = ?," +
 					"`email` = ?," +
@@ -171,8 +172,8 @@ exports.create = {
 			email: "dc@example.com",
 			name: "Debt Collector"
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 99, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 99, "Should return inserted id." );
 			test.done();
 		});
 	}
@@ -191,10 +192,10 @@ exports.get = {
 		test.expect( 3 );
 
 		this.userManager.get( null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "id", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "id", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -203,7 +204,7 @@ exports.get = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -214,7 +215,7 @@ exports.get = {
 		};
 
 		this.userManager.get( 37, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -223,7 +224,7 @@ exports.get = {
 		test.expect( 5 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -234,10 +235,10 @@ exports.get = {
 		};
 
 		this.userManager.get( 37, function( error ) {
-			test.equal( error.message, "E_NOT_FOUND: Unknown user id: 37",
+			test.strictEqual( error.message, "E_NOT_FOUND: Unknown user id: 37",
 				"Should pass the error." );
-			test.equal( error.code, "E_NOT_FOUND" );
-			test.equal( error.id, 37, "Should pass id with error." );
+			test.strictEqual( error.code, "E_NOT_FOUND" );
+			test.strictEqual( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
@@ -254,7 +255,7 @@ exports.get = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -265,7 +266,7 @@ exports.get = {
 		};
 
 		this.userManager.get( 37, function( error, user ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( user, providedUser, "Should pass user." );
 			test.done();
 		});
@@ -285,10 +286,11 @@ exports.getByUsername = {
 		test.expect( 3 );
 
 		this.userManager.getByUsername( null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `username`.",
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `username`.",
 				"Should throw for missing username." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "username", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "username", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -297,7 +299,7 @@ exports.getByUsername = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `username` = ?",
 				"Query should search by username." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -309,7 +311,7 @@ exports.getByUsername = {
 		};
 
 		this.userManager.getByUsername( "debt-collector", function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -318,7 +320,7 @@ exports.getByUsername = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `username` = ?",
 				"Query should search by username." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -330,8 +332,8 @@ exports.getByUsername = {
 		};
 
 		this.userManager.getByUsername( "debt-collector", function( error, user ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( user, null, "Shoul not pass a user." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( user, null, "Shoul not pass a user." );
 			test.done();
 		});
 	},
@@ -348,7 +350,7 @@ exports.getByUsername = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `users` WHERE `username` = ?",
 				"Query should search by username." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -360,7 +362,7 @@ exports.getByUsername = {
 		};
 
 		this.userManager.getByUsername( "debt-collector", function( error, user ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( user, providedUser, "Should pass user." );
 			test.done();
 		});
@@ -378,7 +380,7 @@ exports.getInstance = {
 		test.expect( 2 );
 
 		this.userManager.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id." );
+			test.strictEqual( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -386,7 +388,7 @@ exports.getInstance = {
 		};
 
 		this.userManager.getInstance( 37, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -403,7 +405,7 @@ exports.getInstance = {
 		};
 
 		this.userManager.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id." );
+			test.strictEqual( id, 37, "Should pass id." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -419,7 +421,7 @@ exports.getInstance = {
 		};
 
 		this.userManager.getInstance( 37, function( error ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -452,7 +454,7 @@ exports.getInstance = {
 		};
 
 		this.userManager.getInstance( 37, function( error, instance ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( instance, fakeInstance, "Should pass user instance." );
 			test.done();
 		});
@@ -470,7 +472,7 @@ exports.getInstanceByUsername = {
 		test.expect( 2 );
 
 		this.userManager.getByUsername = function( username, callback ) {
-			test.equal( username, "debt-collector", "Should pass username." );
+			test.strictEqual( username, "debt-collector", "Should pass username." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -478,7 +480,7 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -495,7 +497,7 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getByUsername = function( username, callback ) {
-			test.equal( username, "debt-collector", "Should pass username." );
+			test.strictEqual( username, "debt-collector", "Should pass username." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -511,7 +513,7 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -520,7 +522,7 @@ exports.getInstanceByUsername = {
 		test.expect( 3 );
 
 		this.userManager.getByUsername = function( username, callback ) {
-			test.equal( username, "debt-collector", "Should pass username." );
+			test.strictEqual( username, "debt-collector", "Should pass username." );
 
 			process.nextTick(function() {
 				callback( null, null );
@@ -528,8 +530,8 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error, user ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( user, null, "Should not pass a user." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( user, null, "Should not pass a user." );
 			test.done();
 		});
 	},
@@ -562,7 +564,7 @@ exports.getInstanceByUsername = {
 		};
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error, instance ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( instance, fakeInstance, "Should pass user instance." );
 			test.done();
 		});
@@ -597,7 +599,7 @@ exports._getInstance = {
 
 		User.prototype.initFromSettings = function( settings, callback ) {
 			test.strictEqual( this.app, providedApp, "Should pass app to user." );
-			test.equal( this.id, 37, "Should pass id to user." );
+			test.strictEqual( this.id, 37, "Should pass id to user." );
 			test.strictEqual( settings, providedSettings, "Should pass settings to user." );
 
 			process.nextTick(function() {
@@ -606,7 +608,7 @@ exports._getInstance = {
 		};
 
 		this.userManager._getInstance( providedSettings, function( error, user ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -628,7 +630,7 @@ exports._getInstance = {
 			instance = this;
 
 			test.strictEqual( this.app, providedApp, "Should pass app to user." );
-			test.equal( this.id, 37, "Should pass id to user." );
+			test.strictEqual( this.id, 37, "Should pass id to user." );
 			test.strictEqual( settings, providedSettings, "Should pass settings to user." );
 
 			process.nextTick(function() {
@@ -637,7 +639,7 @@ exports._getInstance = {
 		};
 
 		this.userManager._getInstance( providedSettings, function( error, user ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( user, instance, "Should pass user instance." );
 			test.done();
 		});
@@ -649,11 +651,11 @@ exports._createApiKey = {
 		test.expect( 5 );
 
 		UserManager.prototype._createApiKey(function( error, firstKey ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.ok( /^[a-f0-9]{40}$/.test( firstKey ), "Should produce a sha1 hash." );
 
 			UserManager.prototype._createApiKey(function( error, key ) {
-				test.equal( error, null, "Should not pass an error." );
+				test.strictEqual( error, null, "Should not pass an error." );
 				test.ok( /^[a-f0-9]{40}$/.test( key ), "Should produce a sha1 hash." );
 				test.notEqual( key, firstKey, "Should produce a unique key." );
 				test.done();

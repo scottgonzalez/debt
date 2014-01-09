@@ -19,7 +19,7 @@ exports.init = {
 		test.expect( 2 );
 
 		this.app.user.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id to user." );
+			test.strictEqual( id, 37, "Should pass id to user." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -28,7 +28,7 @@ exports.init = {
 
 		var instance = new User( this.app, 37 );
 		instance.init(function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -45,7 +45,7 @@ exports.init = {
 		};
 
 		this.app.user.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id to user." );
+			test.strictEqual( id, 37, "Should pass id to user." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -62,7 +62,7 @@ exports.init = {
 
 		var instance = new User( this.app, 37 );
 		instance.init(function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	}
@@ -91,7 +91,7 @@ exports.initFromSettings = {
 			name: "Debt Collector",
 			apiKey: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 		}, function( error ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -114,11 +114,12 @@ exports.initFromSettings = {
 		};
 
 		this.user.initFromSettings( providedSettings, function( error ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( this.user.username, providedSettings.username, "Should save username." );
-			test.equal( this.user.email, providedSettings.email, "Should save email." );
-			test.equal( this.user.name, providedSettings.name, "Should save name." );
-			test.equal( this.user.apiKey, providedSettings.apiKey, "Should save apiKey." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( this.user.username, providedSettings.username,
+				"Should save username." );
+			test.strictEqual( this.user.email, providedSettings.email, "Should save email." );
+			test.strictEqual( this.user.name, providedSettings.name, "Should save name." );
+			test.strictEqual( this.user.apiKey, providedSettings.apiKey, "Should save apiKey." );
 			test.done();
 		}.bind( this ));
 	}

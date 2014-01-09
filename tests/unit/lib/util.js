@@ -6,7 +6,7 @@ exports.delay = {
 
 		var async = false;
 		util.delay(function() {
-			test.equal( arguments.length, 0, "No arguments should be passed." );
+			test.strictEqual( arguments.length, 0, "No arguments should be passed." );
 			test.ok( async, "Should be async." );
 			test.done();
 		});
@@ -19,7 +19,7 @@ exports.delay = {
 		var providedParams = [ {}, {} ];
 		var async = false;
 		util.delay(function( a, b ) {
-			test.equal( arguments.length, 2, "Should pass argumenets." );
+			test.strictEqual( arguments.length, 2, "Should pass argumenets." );
 			test.strictEqual( a, providedParams[ 0 ], "Should pass first parameter." );
 			test.strictEqual( b, providedParams[ 1 ], "Should pass second parameter." );
 			test.done();
@@ -170,7 +170,7 @@ exports.escapeHtml = {
 		test.expect( 1 );
 
 		var escaped = util.escapeHtml( "Hello, world!" );
-		test.equal( escaped, "Hello, world!", "No characters should be escaped." );
+		test.strictEqual( escaped, "Hello, world!", "No characters should be escaped." );
 		test.done();
 	},
 
@@ -178,7 +178,8 @@ exports.escapeHtml = {
 		test.expect( 1 );
 
 		var escaped = util.escapeHtml( "<name> says, \"Hello & goodbye, y'all!\"" );
-		test.equal( escaped, "&lt;name&gt; says, &quot;Hello &amp; goodbye, y&#039;all!&quot;",
+		test.strictEqual( escaped,
+			"&lt;name&gt; says, &quot;Hello &amp; goodbye, y&#039;all!&quot;",
 			"All bad characters should be replaced." );
 		test.done();
 	}
@@ -189,7 +190,7 @@ exports.htmlTag = {
 		test.expect( 1 );
 
 		var html = util.htmlTag( "blink" );
-		test.equal( html, "<blink>", "Should produce just the tag with no attributes." );
+		test.strictEqual( html, "<blink>", "Should produce just the tag with no attributes." );
 		test.done();
 	},
 
@@ -197,7 +198,7 @@ exports.htmlTag = {
 		test.expect( 1 );
 
 		var html = util.htmlTag( "blink", {} );
-		test.equal( html, "<blink>", "Should produce just the tag with no attributes." );
+		test.strictEqual( html, "<blink>", "Should produce just the tag with no attributes." );
 		test.done();
 	},
 
@@ -208,7 +209,8 @@ exports.htmlTag = {
 			href: "/",
 			title: "5 > 2"
 		});
-		test.equal( html, "<a href='/' title='5 &gt; 2'>", "Should contain escaped attributes." );
+		test.strictEqual( html, "<a href='/' title='5 &gt; 2'>",
+			"Should contain escaped attributes." );
 		test.done();
 	},
 
@@ -220,7 +222,7 @@ exports.htmlTag = {
 			checked: true,
 			disabled: false
 		});
-		test.equal( html, "<input type='checkbox' checked='checked'>",
+		test.strictEqual( html, "<input type='checkbox' checked='checked'>",
 			"Should contain expanded checked and no disabled." );
 		test.done();
 	}
@@ -230,20 +232,20 @@ exports.isLabel = {
 	"empty": function( test ) {
 		test.expect( 1 );
 
-		test.equal( util.isLabel( "" ), false, "Should not accept empty label." );
+		test.strictEqual( util.isLabel( "" ), false, "Should not accept empty label." );
 		test.done();
 	},
 
 	"invalid": function( test ) {
 		test.expect( 4 );
 
-		test.equal( util.isLabel( "-" ), false,
+		test.strictEqual( util.isLabel( "-" ), false,
 			"Cannot start with a dash" );
-		test.equal( util.isLabel( "_" ), false,
+		test.strictEqual( util.isLabel( "_" ), false,
 			"Cannot start with an underscore" );
-		test.equal( util.isLabel( "a@b" ), false,
+		test.strictEqual( util.isLabel( "a@b" ), false,
 			"Cannot contain special characters." );
-		test.equal( util.isLabel( new Array( 65 ).join( "a" ) ), false,
+		test.strictEqual( util.isLabel( new Array( 65 ).join( "a" ) ), false,
 			"Cannot be >63 characters" );
 		test.done();
 	},
@@ -264,7 +266,7 @@ exports.isEmail = {
 	"empty": function( test ) {
 		test.expect( 1 );
 
-		test.equal( util.isEmail( "" ), false, "Should not accept empty email." );
+		test.strictEqual( util.isEmail( "" ), false, "Should not accept empty email." );
 		test.done();
 	},
 
@@ -273,19 +275,19 @@ exports.isEmail = {
 
 		var longLabel = new Array( 65 ).join( "a" );
 
-		test.equal( util.isEmail( "debt" ), false,
+		test.strictEqual( util.isEmail( "debt" ), false,
 			"Cannot be local only." );
-		test.equal( util.isEmail( "@example.com" ), false,
+		test.strictEqual( util.isEmail( "@example.com" ), false,
 			"Cannot be domain only." );
-		test.equal( util.isEmail( "debt@example" ), false,
+		test.strictEqual( util.isEmail( "debt@example" ), false,
 			"Cannot have a domain with only one label." );
-		test.equal( util.isEmail( "debt@-example.com" ), false,
+		test.strictEqual( util.isEmail( "debt@-example.com" ), false,
 			"Cannot start domain with a hyphen." );
-		test.equal( util.isEmail( "debt@example-.com" ), false,
+		test.strictEqual( util.isEmail( "debt@example-.com" ), false,
 			"Cannot end domain with a hyphen." );
-		test.equal( util.isEmail( "debt@example!com" ), false,
+		test.strictEqual( util.isEmail( "debt@example!com" ), false,
 			"Cannot contain special characters in domain." );
-		test.equal( util.isEmail( "debt@" + longLabel + ".com" ), false,
+		test.strictEqual( util.isEmail( "debt@" + longLabel + ".com" ), false,
 			"Cannot contain domain label >63 characters." );
 		test.done();
 	},
@@ -313,7 +315,7 @@ exports.createError = {
 			message: "too much debt"
 		});
 
-		test.equal( error.message, "too much debt", "Should preserve message." );
+		test.strictEqual( error.message, "too much debt", "Should preserve message." );
 		test.done();
 	},
 
@@ -326,9 +328,10 @@ exports.createError = {
 			debt: Number.MAX_VALUE
 		});
 
-		test.equal( error.message, "E_TEST: too much debt", "Should prefix message with code." );
-		test.equal( error.code, "E_TEST", "Should preserve code." );
-		test.equal( error.debt, Number.MAX_VALUE, "Should preserve arbitrary values." );
+		test.strictEqual( error.message, "E_TEST: too much debt",
+			"Should prefix message with code." );
+		test.strictEqual( error.code, "E_TEST", "Should preserve code." );
+		test.strictEqual( error.debt, Number.MAX_VALUE, "Should preserve arbitrary values." );
 		test.done();
 	}
 };

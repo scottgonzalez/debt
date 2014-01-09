@@ -15,10 +15,10 @@ exports.create = {
 		this.group.create({
 			description: "A group of users."
 		}, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required field `name`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `name`.",
 				"Should throw for missing name." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "name", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "name", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -30,11 +30,11 @@ exports.create = {
 			name: "debt collectors",
 			description: "A group of users."
 		}, function( error ) {
-			test.equal( error.message, "E_INVALID_DATA: Invalid `name` (debt collectors).",
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `name` (debt collectors).",
 				"Should throw for invalid name." );
-			test.equal( error.code, "E_INVALID_DATA" );
-			test.equal( error.field, "name", "Should pass field name with error." );
-			test.equal( error.name, "debt collectors", "Should pass name with error." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "name", "Should pass field name with error." );
+			test.strictEqual( error.name, "debt collectors", "Should pass name with error." );
 			test.done();
 		});
 	},
@@ -43,7 +43,7 @@ exports.create = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `groups` SET " +
 					"`name` = ?," +
 					"`description` = ?",
@@ -61,7 +61,7 @@ exports.create = {
 			name: "debt-collectors",
 			description: "A group of users."
 		}, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -70,7 +70,7 @@ exports.create = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"INSERT INTO `groups` SET " +
 					"`name` = ?," +
 					"`description` = ?",
@@ -88,8 +88,8 @@ exports.create = {
 			name: "debt-collectors",
 			description: "A group of users."
 		}, function( error, id ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( id, 99, "Should return inserted id." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 99, "Should return inserted id." );
 			test.done();
 		});
 	}
@@ -108,10 +108,10 @@ exports.get = {
 		test.expect( 3 );
 
 		this.group.get( null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "id", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "id", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -120,7 +120,7 @@ exports.get = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -131,7 +131,7 @@ exports.get = {
 		};
 
 		this.group.get( 37, function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -140,7 +140,7 @@ exports.get = {
 		test.expect( 5 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -151,10 +151,10 @@ exports.get = {
 		};
 
 		this.group.get( 37, function( error ) {
-			test.equal( error.message, "E_NOT_FOUND: Unknown group id: 37",
+			test.strictEqual( error.message, "E_NOT_FOUND: Unknown group id: 37",
 				"Should pass the error." );
-			test.equal( error.code, "E_NOT_FOUND" );
-			test.equal( error.id, 37, "Should pass id with error." );
+			test.strictEqual( error.code, "E_NOT_FOUND" );
+			test.strictEqual( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
@@ -169,7 +169,7 @@ exports.get = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `id` = ?",
 				"Query should search by id." );
 			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
@@ -180,7 +180,7 @@ exports.get = {
 		};
 
 		this.group.get( 37, function( error, group ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( group, providedGroup, "Should pass group." );
 			test.done();
 		});
@@ -200,10 +200,10 @@ exports.getByName = {
 		test.expect( 3 );
 
 		this.group.getByName( null, function( error ) {
-			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `name`.",
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `name`.",
 				"Should throw for missing name." );
-			test.equal( error.code, "E_MISSING_DATA" );
-			test.equal( error.field, "name", "Should pass field name with error." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "name", "Should pass field name with error." );
 			test.done();
 		});
 	},
@@ -212,7 +212,7 @@ exports.getByName = {
 		test.expect( 3 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `name` = ?",
 				"Query should search by name." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -224,7 +224,7 @@ exports.getByName = {
 		};
 
 		this.group.getByName( "debt-collector", function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -233,7 +233,7 @@ exports.getByName = {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `name` = ?",
 				"Query should search by name." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -245,8 +245,8 @@ exports.getByName = {
 		};
 
 		this.group.getByName( "debt-collector", function( error, group ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( group, null, "Should not pass a group." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( group, null, "Should not pass a group." );
 			test.done();
 		});
 	},
@@ -261,7 +261,7 @@ exports.getByName = {
 		};
 
 		this.app.database.query = function( query, values, callback ) {
-			test.equal( query,
+			test.strictEqual( query,
 				"SELECT * FROM `groups` WHERE `name` = ?",
 				"Query should search by name." );
 			test.deepEqual( values, [ "debt-collector" ],
@@ -273,7 +273,7 @@ exports.getByName = {
 		};
 
 		this.group.getByName( "debt-collector", function( error, group ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( group, providedGroup, "Should pass group." );
 			test.done();
 		});

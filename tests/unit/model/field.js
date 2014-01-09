@@ -19,7 +19,7 @@ exports.init = {
 		test.expect( 2 );
 
 		this.app.field.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id to field." );
+			test.strictEqual( id, 37, "Should pass id to field." );
 
 			process.nextTick(function() {
 				callback( new Error( "database gone" ) );
@@ -28,7 +28,7 @@ exports.init = {
 
 		var instance = new Field( this.app, 37 );
 		instance.init(function( error ) {
-			test.equal( error.message, "database gone", "Should pass the error." );
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -44,7 +44,7 @@ exports.init = {
 		};
 
 		this.app.field.get = function( id, callback ) {
-			test.equal( id, 37, "Should pass id to field." );
+			test.strictEqual( id, 37, "Should pass id to field." );
 
 			process.nextTick(function() {
 				callback( null, providedSettings );
@@ -61,7 +61,7 @@ exports.init = {
 
 		var instance = new Field( this.app, 37 );
 		instance.init(function( error ) {
-			test.equal( error, null, "Should not pass an error." );
+			test.strictEqual( error, null, "Should not pass an error." );
 			test.done();
 		});
 	}
@@ -89,7 +89,7 @@ exports.initFromSettings = {
 			label: "my field",
 			config: ""
 		}, function( error ) {
-			test.equal( error.message, "bad init", "Should pass the error." );
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
 			test.done();
 		});
 	},
@@ -109,10 +109,10 @@ exports.initFromSettings = {
 			label: "my field",
 			config: "custom config"
 		}, function( error ) {
-			test.equal( error, null, "Should not pass an error." );
-			test.equal( this.field.label, "my field", "Should save label." );
-			test.equal( this.field.config, "custom config", "Should save config." );
-			test.equal( this.field.inputName, "field_myfield", "Should generate inputName." );
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( this.field.label, "my field", "Should save label." );
+			test.strictEqual( this.field.config, "custom config", "Should save config." );
+			test.strictEqual( this.field.inputName, "field_myfield", "Should generate inputName." );
 			test.done();
 		}.bind( this ));
 	}
