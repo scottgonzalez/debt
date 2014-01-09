@@ -277,6 +277,28 @@ exports.getByUsername = {
 		});
 	},
 
+	"no user": function( test ) {
+		test.expect( 4 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.equal( query,
+				"SELECT * FROM `users` WHERE `username` = ?",
+				"Query should search by username." );
+			test.deepEqual( values, [ "debt-collector" ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [] );
+			});
+		};
+
+		this.userManager.getByUsername( "debt-collector", function( error, user ) {
+			test.equal( error, null, "Should not pass an error." );
+			test.equal( user, null, "Shoul not pass a user." );
+			test.done();
+		});
+	},
+
 	"valid": function( test ) {
 		test.expect( 4 );
 
@@ -307,7 +329,6 @@ exports.getByUsername = {
 		});
 	}
 };
-
 
 exports.getInstance = {
 	setUp: function( done ) {
@@ -454,6 +475,24 @@ exports.getInstanceByUsername = {
 
 		this.userManager.getInstanceByUsername( "debt-collector", function( error ) {
 			test.equal( error.message, "bad init", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"no user": function( test ) {
+		test.expect( 3 );
+
+		this.userManager.getByUsername = function( username, callback ) {
+			test.equal( username, "debt-collector", "Should pass username." );
+
+			process.nextTick(function() {
+				callback( null, null );
+			});
+		};
+
+		this.userManager.getInstanceByUsername( "debt-collector", function( error, user ) {
+			test.equal( error, null, "Should no pass an error." );
+			test.equal( user, null, "Should no pass a user." );
 			test.done();
 		});
 	},
