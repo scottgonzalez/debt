@@ -11,26 +11,37 @@ exports.register = {
 	},
 
 	"missing type": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		test.throws(
 			function() {
 				this.fieldManager.register( null, {} );
 			}.bind( this ),
-			/^Missing required parameter `type`\.$/,
+			function( error ) {
+				test.equal( error.message, "E_MISSING_DATA: Missing required parameter `type`." );
+				test.equal( error.code, "E_MISSING_DATA" );
+				test.equal( error.field, "type", "Should pass field name with error." );
+				return true;
+			},
 			"Should throw for missing type."
 		);
 		test.done();
 	},
 
 	"invalid type": function( test ) {
-		test.expect( 1 );
+		test.expect( 5 );
 
 		test.throws(
 			function() {
 				this.fieldManager.register( "test type", {} );
 			}.bind( this ),
-			/^Invalid `type` \(test type\)\.$/,
+			function( error ) {
+				test.equal( error.message, "E_INVALID_DATA: Invalid `type` (test type)." );
+				test.equal( error.code, "E_INVALID_DATA" );
+				test.equal( error.field, "type", "Should pass field name with error." );
+				test.equal( error.type, "test type", "Should pass type with error." );
+				return true;
+			},
 			"Should throw for invalid type."
 		);
 		test.done();
@@ -64,44 +75,51 @@ exports.create = {
 	},
 
 	"missing type": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.fieldManager.create({
 			label: "my field"
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `type`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `type`.",
 				"Should throw for missing type." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "type", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"invalid type": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		this.fieldManager.create({
 			type: "fake",
 			label: "my field"
 		}, function( error ) {
-			test.equal( error.message, "Invalid `type` (fake).",
+			test.equal( error.message, "E_INVALID_DATA: Invalid `type` (fake).",
 				"Should throw for invalid type." );
+			test.equal( error.code, "E_INVALID_DATA" );
+			test.equal( error.field, "type", "Should pass field name with error." );
+			test.equal( error.type, "fake", "Should pass type with error." );
 			test.done();
 		});
 	},
 
 	"missing label": function( test ) {
-		test.expect( 1 );
+		test.expect( 3 );
 
 		this.fieldManager.create({
 			type: "text"
 		}, function( error ) {
-			test.equal( error.message, "Missing required field `label`.",
+			test.equal( error.message, "E_MISSING_DATA: Missing required field `label`.",
 				"Should throw for missing label." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "label", "Should pass field name with error." );
 			test.done();
 		});
 	},
 
 	"invalid label": function( test ) {
-		test.expect( 1 );
+		test.expect( 4 );
 
 		var label = new Array( 65 ).join( "a" );
 
@@ -109,8 +127,11 @@ exports.create = {
 			type: "text",
 			label: label
 		}, function( error ) {
-			test.equal( error.message, "Invalid `label` (" + label + ").",
+			test.equal( error.message, "E_INVALID_DATA: Invalid `label` (" + label + ").",
 				"Should throw for invalid label." );
+			test.equal( error.code, "E_INVALID_DATA" );
+			test.equal( error.field, "label", "Should pass field name with error." );
+			test.equal( error.label, label, "Should pass label with error." );
 			test.done();
 		});
 	},
@@ -209,6 +230,18 @@ exports.get = {
 		done();
 	},
 
+	"missing id": function( test ) {
+		test.expect( 3 );
+
+		this.fieldManager.get( null, function( error ) {
+			test.equal( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+				"Should throw for missing id." );
+			test.equal( error.code, "E_MISSING_DATA" );
+			test.equal( error.field, "id", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
 	"database query error": function( test ) {
 		test.expect( 3 );
 
@@ -230,7 +263,7 @@ exports.get = {
 	},
 
 	"unknown field": function( test ) {
-		test.expect( 3 );
+		test.expect( 5 );
 
 		this.app.database.query = function( query, values, callback ) {
 			test.equal( query,
@@ -244,7 +277,10 @@ exports.get = {
 		};
 
 		this.fieldManager.get( 37, function( error ) {
-			test.equal( error.message, "Unknown field id: 37", "Should pass the error." );
+			test.equal( error.message, "E_NOT_FOUND: Unknown field id: 37",
+				"Should pass the error." );
+			test.equal( error.code, "E_NOT_FOUND" );
+			test.equal( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
