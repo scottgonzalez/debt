@@ -304,3 +304,31 @@ exports.isEmail = {
 		test.done();
 	}
 };
+
+exports.createError = {
+	"simple error": function( test ) {
+		test.expect( 1 );
+
+		var error = util.createError({
+			message: "too much debt"
+		});
+
+		test.equal( error.message, "too much debt", "Should preserve message." );
+		test.done();
+	},
+
+	"complex error": function( test ) {
+		test.expect( 3 );
+
+		var error = util.createError({
+			code: "E_TEST",
+			message: "too much debt",
+			debt: Number.MAX_VALUE
+		});
+
+		test.equal( error.message, "E_TEST: too much debt", "Should prefix message with code." );
+		test.equal( error.code, "E_TEST", "Should preserve code." );
+		test.equal( error.debt, Number.MAX_VALUE, "Should preserve arbitrary values." );
+		test.done();
+	}
+};
