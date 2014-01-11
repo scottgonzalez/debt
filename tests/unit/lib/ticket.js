@@ -162,7 +162,7 @@ exports.get = {
 	},
 
 	"not found": function( test ) {
-		test.expect( 4 );
+		test.expect( 5 );
 
 		this.app.database.query = function( query, values, callback ) {
 			test.strictEqual( query,
@@ -176,9 +176,11 @@ exports.get = {
 			});
 		};
 
-		this.ticket.get( 37, function( error, ticket ) {
-			test.strictEqual( error, null, "Should not pass an error." );
-			test.strictEqual( ticket, null, "Should not pass a ticket." );
+		this.ticket.get( 37, function( error ) {
+			test.strictEqual( error.message, "E_NOT_FOUND: Unknown ticket id: 37",
+				"Should pass the error." );
+			test.strictEqual( error.code, "E_NOT_FOUND" );
+			test.strictEqual( error.id, 37, "Should pass id with error." );
 			test.done();
 		});
 	},
