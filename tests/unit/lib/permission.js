@@ -264,6 +264,151 @@ exports.grantToGroup = {
 	}
 };
 
+exports.getUserPermission = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.permission = new Permission( this.app );
+		done();
+	},
+
+	"missing userId": function( test ) {
+		test.expect( 3 );
+
+		this.permission.getUserPermissions( null, function( error ) {
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `userId`.",
+				"Should throw for missing userId." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "userId", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"database error": function( test ) {
+		test.expect( 3 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT `permission` FROM `userPermissions` WHERE `userId` = ?",
+				"Query should select values from database." );
+			test.deepEqual( values, [ 37 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.permission.getUserPermissions( 37, function( error ) {
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 5 );
+
+		var providedRaw = {};
+		var providedObject = {};
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT `permission` FROM `userPermissions` WHERE `userId` = ?",
+				"Query should select values from database." );
+			test.deepEqual( values, [ 37 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, providedRaw );
+			});
+		};
+
+		this.permission._rawToObject = function( rows ) {
+			test.strictEqual( rows, providedRaw, "Should pass raw permissions." );
+			return providedObject;
+		};
+
+		this.permission.getUserPermissions( 37, function( error, permissions ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( permissions, providedObject, "Should pass the permissions." );
+			test.done();
+		});
+	}
+};
+
+exports.satifies = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.permission = new Permission( this.app );
+		done();
+	},
+
+	"invalid": function( test ) {
+		test.expect( 3 );
+
+		test.strictEqual( this.permission.satisfies( {}, "TICKET:CREATE" ), false,
+			"No permissions should not satisfy any permission." );
+		test.strictEqual(
+			this.permission.satisfies( { TICKET: { CREATE: true } }, "TICKET:ADMIN" ), false,
+			"Specific permission should not satisfy admin."
+		);
+		test.strictEqual(
+			this.permission.satisfies( { TICKET: { ADMIN: true } }, "PERMISSION:GRANT" ), false,
+			"Admin for one component should not satisfy other component."
+		);
+		test.done();
+	},
+
+	"valid": function( test ) {
+		test.expect( 3 );
+
+		test.ok( this.permission.satisfies( { TICKET: { CREATE: true } }, "TICKET:CREATE" ),
+			"Specific permission should satisfy itself." );
+		test.ok( this.permission.satisfies( { TICKET: { ADMIN: true } }, "TICKET:CREATE" ),
+			"Admin for component should satisify specific action." );
+		test.ok( this.permission.satisfies( { DEBT: { ADMIN: true } }, "TICKET:CREATE" ),
+			"DEBT Admin should satisfy all actions." );
+		test.done();
+	}
+};
+
+exports._rawToObject = {
+	"empty": function( test ) {
+		test.expect( 1 );
+
+		test.deepEqual( Permission.prototype._rawToObject( [] ), {},
+			"Empty permission should return empty permissions." );
+		test.done();
+	},
+
+	"permissions": function( test ) {
+		test.expect( 1 );
+
+		test.deepEqual(
+			Permission.prototype._rawToObject([
+				{ permission: "TICKET:CREATE" },
+				{ permission: "TICKET:EDIT" },
+				{ permission: "PERMISSION:GRANT" }
+			]),
+			{
+				TICKET: {
+					CREATE: true,
+					EDIT: true
+				},
+				PERMISSION: {
+					GRANT: true
+				}
+			},
+			"Database results should convert to permissions object."
+		);
+		test.done();
+	}
+};
+
 exports._validPermission = {
 	setUp: function( done ) {
 		this.app = {
