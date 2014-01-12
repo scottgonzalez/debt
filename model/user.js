@@ -31,9 +31,22 @@ util.extend( User.prototype, {
 		this._init( callback );
 	},
 
+	hasPermission: function( permission ) {
+		return this.app.permission.satisfies( this.permissions, permission );
+	},
+
 	_init: function( callback ) {
-		process.nextTick(function() {
+		this._loadPermissions( callback );
+	},
+
+	_loadPermissions: function( callback ) {
+		this.app.permission.getUserPermissions( this.id, function( error, permissions ) {
+			if ( error ) {
+				return callback( error );
+			}
+
+			this.permissions = permissions;
 			callback( null );
-		});
+		}.bind( this ));
 	}
 });
