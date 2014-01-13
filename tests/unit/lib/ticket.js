@@ -1,18 +1,19 @@
-var Ticket = require( "../../../lib/ticket" ).Ticket;
+var TicketManager = require( "../../../lib/ticket" ).TicketManager;
+var Ticket = require( "../../../model/ticket" ).Ticket;
 
 exports.create = {
 	setUp: function( done ) {
 		this.app = {
 			database: {}
 		};
-		this.ticket = new Ticket( this.app );
+		this.ticketManager = new TicketManager( this.app );
 		done();
 	},
 
 	"missing title": function( test ) {
 		test.expect( 3 );
 
-		this.ticket.create({
+		this.ticketManager.create({
 			body: "some description",
 			userId: 37
 		}, function( error ) {
@@ -27,7 +28,7 @@ exports.create = {
 	"missing userId": function( test ) {
 		test.expect( 3 );
 
-		this.ticket.create({
+		this.ticketManager.create({
 			title: "my ticket",
 			body: "some description"
 		}, function( error ) {
@@ -59,7 +60,7 @@ exports.create = {
 			});
 		};
 
-		this.ticket.create({
+		this.ticketManager.create({
 			title: "my ticket",
 			body: "some description",
 			userId: 37
@@ -89,7 +90,7 @@ exports.create = {
 			});
 		};
 
-		this.ticket.create({
+		this.ticketManager.create({
 			title: "my ticket",
 			body: "some description",
 			userId: 37
@@ -127,7 +128,7 @@ exports.create = {
 			});
 		};
 
-		this.ticket.create({
+		this.ticketManager.create({
 			title: "my ticket",
 			body: "some description",
 			userId: 37,
@@ -145,14 +146,14 @@ exports.get = {
 		this.app = {
 			database: {}
 		};
-		this.ticket = new Ticket( this.app );
+		this.ticketManager = new TicketManager( this.app );
 		done();
 	},
 
 	"missing id": function( test ) {
 		test.expect( 3 );
 
-		this.ticket.get( null, function( error) {
+		this.ticketManager.get( null, function( error) {
 			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
 			test.strictEqual( error.code, "E_MISSING_DATA" );
@@ -176,7 +177,7 @@ exports.get = {
 			});
 		};
 
-		this.ticket.get( 37, function( error ) {
+		this.ticketManager.get( 37, function( error ) {
 			test.strictEqual( error.message, "E_NOT_FOUND: Unknown ticket id: 37",
 				"Should pass the error." );
 			test.strictEqual( error.code, "E_NOT_FOUND" );
@@ -192,6 +193,7 @@ exports.get = {
 			id: 37,
 			title: "my ticket",
 			body: "some description",
+			userId: 99,
 			created: new Date( "Mon Nov 4 2013 11:01:54 -0500" ),
 			edited: new Date( "Mon Dec 9 2013 20:56:17 -0500" )
 		};
@@ -208,9 +210,113 @@ exports.get = {
 			});
 		};
 
-		this.ticket.get( 37, function( error, ticket ) {
+		this.ticketManager.get( 37, function( error, ticket ) {
 			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( ticket, providedTicket, "Should pass ticket." );
+			test.done();
+		});
+	}
+};
+
+exports.getInstance = {
+	setUp: function( done ) {
+		this._initFromSettings = Ticket.prototype.initFromSettings;
+
+		this.app = {};
+		this.ticketManager = new TicketManager( this.app );
+		done();
+	},
+
+	tearDown: function( done ) {
+		Ticket.prototype.initFromSettings = this._initFromSettings;
+		done();
+	},
+
+	"get error": function( test ) {
+		test.expect( 2 );
+
+		this.ticketManager.get = function( id, callback ) {
+			test.strictEqual( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.ticketManager.getInstance( 37, function( error ) {
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"init error": function( test ) {
+		test.expect( 3 );
+
+		var providedSettings = {
+			id: 37,
+			title: "my ticket",
+			body: "some description",
+			userId: 99,
+			created: new Date( "Mon Nov 4 2013 11:01:54 -0500" ),
+			edited: new Date( "Mon Dec 9 2013 20:56:17 -0500" )
+		};
+
+		this.ticketManager.get = function( id, callback ) {
+			test.strictEqual( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		Ticket.prototype.initFromSettings = function( settings, callback ) {
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			process.nextTick(function() {
+				callback( new Error( "bad init" ) );
+			});
+		};
+
+		this.ticketManager.getInstance( 37, function( error ) {
+			test.strictEqual( error.message, "bad init", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 4 );
+
+		var fakeInstance;
+		var providedSettings = {
+			id: 37,
+			title: "my ticket",
+			body: "some description",
+			userId: 99,
+			created: new Date( "Mon Nov 4 2013 11:01:54 -0500" ),
+			edited: new Date( "Mon Dec 9 2013 20:56:17 -0500" )
+		};
+
+		this.ticketManager.get = function( id, callback ) {
+			test.strictEqual( id, 37, "Should pass id." );
+
+			process.nextTick(function() {
+				callback( null, providedSettings );
+			});
+		};
+
+		Ticket.prototype.initFromSettings = function( settings, callback ) {
+			fakeInstance = this;
+
+			test.strictEqual( settings, providedSettings, "Should pass settings." );
+
+			process.nextTick(function() {
+				callback( null );
+			});
+		};
+
+		this.ticketManager.getInstance( 37, function( error, instance ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( instance, fakeInstance, "Should pass ticket instance." );
 			test.done();
 		});
 	}

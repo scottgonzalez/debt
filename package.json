@@ -16,7 +16,8 @@
     "hbs": "2.4.0",
     "connect-oauth-github": "0.1.0",
     "connect-mysql": "0.4.0",
-    "github-request": "1.1.0"
+    "github-request": "1.1.0",
+    "marked": "0.3.0"
   },
   "devDependencies": {
     "nodeunit": "0.8.2",
