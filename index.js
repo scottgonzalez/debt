@@ -76,6 +76,7 @@ util.extend( Debt.prototype, {
 		this.group = require( "./lib/group" )( this );
 		this.permission = require( "./lib/permission" )( this );
 		this.auth = require( "./lib/auth" )( this );
+		this.handlebars = require( "./lib/handlebars" );
 
 		// Create Express application
 		this.web = web.createServer( this );

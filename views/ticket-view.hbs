@@ -1,9 +1,8 @@
-<h1>Ticket #{{id}}</h1>
+<h1>{{title}}</h1>
 
-<h2>{{title}}</h2>
-
-<div>Reported by: {{user.username}}</div>
-<div>Created: {{created}}</div>
-<div>Edited: {{edited}}</div>
+<p>Ticket {{ticketLink id}} was created by {{userLink user}} {{timeSince created}}.</p>
+{{#if (not (equal created edited))}}
+	<p>It was most recently updated {{timeSince edited}}.</p>
+{{/if}}
 
 {{{body}}}
