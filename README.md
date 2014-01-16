@@ -8,7 +8,7 @@ This is the future home of the most amazing bug tracker ever.
 
 ## License
 
-Copyright 2013 Scott González. Released under the terms of the MIT license.
+Copyright 2014 Scott González. Released under the terms of the MIT license.
 
 ---
 
