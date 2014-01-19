@@ -1,0 +1,276 @@
+var Comment = require( "../../../lib/comment" ).Comment;
+
+exports.create = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.comment = new Comment( this.app );
+		done();
+	},
+
+	"missing ticketId": function( test ) {
+		test.expect( 3 );
+
+		this.comment.create({
+			userId: 37,
+			body: "pay down your debt"
+		}, function( error ) {
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `ticketId`.",
+				"Should throw for missing ticketId." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "ticketId", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"missing userId": function( test ) {
+		test.expect( 3 );
+
+		this.comment.create({
+			ticketId: 99,
+			body: "pay down your debt"
+		}, function( error ) {
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `userId`.",
+				"Should throw for missing userId." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "userId", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"missing body": function( test ) {
+		test.expect( 3 );
+
+		this.comment.create({
+			ticketId: 99,
+			userId: 37
+		}, function( error ) {
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required field `body`.",
+				"Should throw for missing body." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "body", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"database insertion error": function( test ) {
+		test.expect( 3 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"INSERT INTO `comments` SET " +
+					"`ticketId` = ?," +
+					"`userId` = ?," +
+					"`body` = ?",
+				"Query should insert values into database." );
+			test.deepEqual( values,
+				[ 99, 37, "pay down your debt" ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.comment.create({
+			ticketId: 99,
+			userId: 37,
+			body: "pay down your debt"
+		}, function( error ) {
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 4 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"INSERT INTO `comments` SET " +
+					"`ticketId` = ?," +
+					"`userId` = ?," +
+					"`body` = ?",
+				"Query should insert values into database." );
+			test.deepEqual( values,
+				[ 99, 37, "pay down your debt" ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, { insertId: 123 } );
+			});
+		};
+
+		this.comment.create({
+			ticketId: 99,
+			userId: 37,
+			body: "pay down your debt"
+		}, function( error, id ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 123, "Should return inserted id." );
+			test.done();
+		});
+	}
+};
+
+exports.get = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.comment = new Comment( this.app );
+		done();
+	},
+
+	"missing id": function( test ) {
+		test.expect( 3 );
+
+		this.comment.get( null, function( error ) {
+			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
+				"Should throw for missing id." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "id", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"database query error": function( test ) {
+		test.expect( 3 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT * FROM `comments` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.comment.get( 37, function( error ) {
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"not found": function( test ) {
+		test.expect( 5 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT * FROM `comments` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [] );
+			});
+		};
+
+		this.comment.get( 37, function( error ) {
+			test.strictEqual( error.message, "E_NOT_FOUND: Unknown comment id: 37",
+				"Should pass the error." );
+			test.strictEqual( error.code, "E_NOT_FOUND" );
+			test.strictEqual( error.id, 37, "Should pass id with error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 4 );
+
+		var providedComment = {
+			id: 123,
+			ticketId: 99,
+			userId: 37,
+			body: "pay down your debt"
+		};
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT * FROM `comments` WHERE `id` = ?",
+				"Query should search by id." );
+			test.deepEqual( values, [ 37 ], "Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, [ providedComment ] );
+			});
+		};
+
+		this.comment.get( 37, function( error, comment ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( comment, providedComment, "Should pass comment." );
+			test.done();
+		});
+	}
+};
+
+exports.getTicketComments = {
+	setUp: function( done ) {
+		this.app = {
+			database: {}
+		};
+		this.comment = new Comment( this.app );
+		done();
+	},
+
+	"missing ticketId": function( test ) {
+		test.expect( 3 );
+
+		this.comment.getTicketComments( null, function( error ) {
+			test.strictEqual( error.message,
+				"E_MISSING_DATA: Missing required parameter `ticketId`.",
+				"Should throw for missing name." );
+			test.strictEqual( error.code, "E_MISSING_DATA" );
+			test.strictEqual( error.field, "ticketId", "Should pass field name with error." );
+			test.done();
+		});
+	},
+
+	"database query error": function( test ) {
+		test.expect( 3 );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT * FROM `comments` WHERE `ticketId` = ?",
+				"Query should search by ticketId." );
+			test.deepEqual( values, [ 99 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( new Error( "database gone" ) );
+			});
+		};
+
+		this.comment.getTicketComments( 99, function( error ) {
+			test.strictEqual( error.message, "database gone", "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 4 );
+
+		var providedComments = {};
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"SELECT * FROM `comments` WHERE `ticketId` = ?",
+				"Query should search by ticketId." );
+			test.deepEqual( values, [ 99 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, providedComments );
+			});
+		};
+
+		this.comment.getTicketComments( 99, function( error, comments ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( comments, providedComments, "Should pass comment." );
+			test.done();
+		});
+	}
+};
