@@ -40,8 +40,10 @@ exports.create = {
 		});
 	},
 
-	"database insertion error": function( test ){
-		test.expect( 3 );
+	"invalid reference": function( test ) {
+		test.expect( 7 );
+
+		var providedError = new Error();
 
 		this.app.database.query = function( query, values, callback ) {
 			test.strictEqual( query,
@@ -56,8 +58,53 @@ exports.create = {
 				"Should pass values for escaping." );
 
 			process.nextTick(function() {
-				callback( new Error( "database gone" ) );
+				callback( providedError );
 			});
+		};
+
+		this.app.database.referenceError = function( error ) {
+			test.strictEqual( error, providedError, "Should check if error is a reference error." );
+			return "userId";
+		};
+
+		this.ticketManager.create({
+			title: "my ticket",
+			body: "some description",
+			userId: 37
+		}, function( error ) {
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `userId` (37)." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "userId", "Should pass field name with error." );
+			test.strictEqual( error.userId, 37, "Should pass field value with error." );
+			test.done();
+		});
+	},
+
+	"database insertion error": function( test ){
+		test.expect( 4 );
+
+		var providedError = new Error( "database gone" );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"INSERT INTO `tickets` SET " +
+					"`title` = ?," +
+					"`body` = ?," +
+					"`userId` = ?," +
+					"`created` = NOW()," +
+					"`edited` = NOW()",
+				"Query should insert values into database." );
+			test.deepEqual( values, [ "my ticket", "some description", 37 ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( providedError );
+			});
+		};
+
+		this.app.database.referenceError = function( error ) {
+			test.strictEqual( error, providedError, "Should check if error is a reference error." );
+			return null;
 		};
 
 		this.ticketManager.create({
