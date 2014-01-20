@@ -71,6 +71,7 @@ util.extend( Debt.prototype, {
 
 	_initModules: function() {
 		this.ticket = require( "./lib/ticket" )( this );
+		this.comment = require( "./lib/comment" )( this );
 		this.field = require( "./lib/field" )( this );
 		this.user = require( "./lib/user" )( this );
 		this.group = require( "./lib/group" )( this );
