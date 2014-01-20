@@ -99,7 +99,7 @@ exports.initFromSettings = {
 	},
 
 	"valid": function( test ) {
-		test.expect( 6 );
+		test.expect( 8 );
 
 		var providedSettings = {
 			id: 37,
@@ -110,9 +110,15 @@ exports.initFromSettings = {
 			edited: new Date( "2012-01-12 21:15:00" )
 		};
 
+		this.ticket._parseBody = function( body ) {
+			test.strictEqual( body, "Your debt is *too* high!" );
+			return "parsed body";
+		};
+
 		this.ticket._init = function( callback ) {
 			test.strictEqual( this.title, providedSettings.title, "Should save title." );
-			test.strictEqual( this.rawBody, providedSettings.body, "Should save body." );
+			test.strictEqual( this.rawBody, providedSettings.body, "Should save raw body." );
+			test.strictEqual( this.body, "parsed body", "Should save parsed body." );
 			test.strictEqual( this.userId, providedSettings.userId, "Should save userId." );
 			test.strictEqual( this.created, providedSettings.created, "Should save created." );
 			test.strictEqual( this.edited, providedSettings.edited, "Should save edited." );
