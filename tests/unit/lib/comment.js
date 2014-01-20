@@ -57,7 +57,7 @@ exports.create = {
 	"invalid reference": function( test ) {
 		test.expect( 7 );
 
-		var providedError = new Error( "database gone" );
+		var providedError = new Error();
 
 		this.app.database.query = function( query, values, callback ) {
 			test.strictEqual( query,
