@@ -34,6 +34,10 @@ util.extend( Ticket.prototype, {
 		this._init( callback );
 	},
 
+	getComments: function( callback ) {
+		this.app.comment.getTicketCommentInstances( this.id, callback );
+	},
+
 	_parseBody: function( body ) {
 		return marked( body );
 	},

@@ -6,3 +6,10 @@
 {{/if}}
 
 {{{body}}}
+
+{{#each comments}}
+<div>
+	{{userLink user}} {{timeSince created}}
+	<div>{{{body}}}</div>
+</div>
+{{/each}}
