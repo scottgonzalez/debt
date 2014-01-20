@@ -1,18 +1,18 @@
-var Comment = require( "../../../lib/comment" ).Comment;
+var CommentManager = require( "../../../lib/comment" ).CommentManager;
 
 exports.create = {
 	setUp: function( done ) {
 		this.app = {
 			database: {}
 		};
-		this.comment = new Comment( this.app );
+		this.commentManager = new CommentManager( this.app );
 		done();
 	},
 
 	"missing ticketId": function( test ) {
 		test.expect( 3 );
 
-		this.comment.create({
+		this.commentManager.create({
 			userId: 37,
 			body: "pay down your debt"
 		}, function( error ) {
@@ -27,7 +27,7 @@ exports.create = {
 	"missing userId": function( test ) {
 		test.expect( 3 );
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			body: "pay down your debt"
 		}, function( error ) {
@@ -42,7 +42,7 @@ exports.create = {
 	"missing body": function( test ) {
 		test.expect( 3 );
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			userId: 37
 		}, function( error ) {
@@ -81,7 +81,7 @@ exports.create = {
 			return "ticketId";
 		};
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			userId: 37,
 			body: "pay down your debt"
@@ -121,7 +121,7 @@ exports.create = {
 			return null;
 		};
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			userId: 37,
 			body: "pay down your debt"
@@ -151,7 +151,7 @@ exports.create = {
 			});
 		};
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			userId: 37,
 			body: "pay down your debt"
@@ -189,7 +189,7 @@ exports.create = {
 			});
 		};
 
-		this.comment.create({
+		this.commentManager.create({
 			ticketId: 99,
 			userId: 37,
 			body: "pay down your debt",
@@ -207,14 +207,14 @@ exports.get = {
 		this.app = {
 			database: {}
 		};
-		this.comment = new Comment( this.app );
+		this.commentManager = new CommentManager( this.app );
 		done();
 	},
 
 	"missing id": function( test ) {
 		test.expect( 3 );
 
-		this.comment.get( null, function( error ) {
+		this.commentManager.get( null, function( error ) {
 			test.strictEqual( error.message, "E_MISSING_DATA: Missing required parameter `id`.",
 				"Should throw for missing id." );
 			test.strictEqual( error.code, "E_MISSING_DATA" );
@@ -237,7 +237,7 @@ exports.get = {
 			});
 		};
 
-		this.comment.get( 37, function( error ) {
+		this.commentManager.get( 37, function( error ) {
 			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
@@ -257,7 +257,7 @@ exports.get = {
 			});
 		};
 
-		this.comment.get( 37, function( error ) {
+		this.commentManager.get( 37, function( error ) {
 			test.strictEqual( error.message, "E_NOT_FOUND: Unknown comment id: 37",
 				"Should pass the error." );
 			test.strictEqual( error.code, "E_NOT_FOUND" );
@@ -288,7 +288,7 @@ exports.get = {
 			});
 		};
 
-		this.comment.get( 37, function( error, comment ) {
+		this.commentManager.get( 37, function( error, comment ) {
 			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( comment, providedComment, "Should pass comment." );
 			test.done();
@@ -301,14 +301,14 @@ exports.getTicketComments = {
 		this.app = {
 			database: {}
 		};
-		this.comment = new Comment( this.app );
+		this.commentManager = new CommentManager( this.app );
 		done();
 	},
 
 	"missing ticketId": function( test ) {
 		test.expect( 3 );
 
-		this.comment.getTicketComments( null, function( error ) {
+		this.commentManager.getTicketComments( null, function( error ) {
 			test.strictEqual( error.message,
 				"E_MISSING_DATA: Missing required parameter `ticketId`.",
 				"Should throw for missing name." );
@@ -333,7 +333,7 @@ exports.getTicketComments = {
 			});
 		};
 
-		this.comment.getTicketComments( 99, function( error ) {
+		this.commentManager.getTicketComments( 99, function( error ) {
 			test.strictEqual( error.message, "database gone", "Should pass the error." );
 			test.done();
 		});
@@ -356,7 +356,7 @@ exports.getTicketComments = {
 			});
 		};
 
-		this.comment.getTicketComments( 99, function( error, comments ) {
+		this.commentManager.getTicketComments( 99, function( error, comments ) {
 			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( comments, providedComments, "Should pass comment." );
 			test.done();
