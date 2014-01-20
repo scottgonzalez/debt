@@ -64,7 +64,8 @@ exports.create = {
 				"INSERT INTO `comments` SET " +
 					"`ticketId` = ?," +
 					"`userId` = ?," +
-					"`body` = ?",
+					"`body` = ?," +
+					"`created` = NOW()",
 				"Query should insert values into database." );
 			test.deepEqual( values,
 				[ 99, 37, "pay down your debt" ],
@@ -103,7 +104,8 @@ exports.create = {
 				"INSERT INTO `comments` SET " +
 					"`ticketId` = ?," +
 					"`userId` = ?," +
-					"`body` = ?",
+					"`body` = ?," +
+					"`created` = NOW()",
 				"Query should insert values into database." );
 			test.deepEqual( values,
 				[ 99, 37, "pay down your debt" ],
@@ -129,7 +131,7 @@ exports.create = {
 		});
 	},
 
-	"valid": function( test ) {
+	"minimal": function( test ) {
 		test.expect( 4 );
 
 		this.app.database.query = function( query, values, callback ) {
@@ -137,7 +139,8 @@ exports.create = {
 				"INSERT INTO `comments` SET " +
 					"`ticketId` = ?," +
 					"`userId` = ?," +
-					"`body` = ?",
+					"`body` = ?," +
+					"`created` = NOW()",
 				"Query should insert values into database." );
 			test.deepEqual( values,
 				[ 99, 37, "pay down your debt" ],
@@ -152,6 +155,45 @@ exports.create = {
 			ticketId: 99,
 			userId: 37,
 			body: "pay down your debt"
+		}, function( error, id ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( id, 123, "Should return inserted id." );
+			test.done();
+		});
+	},
+
+	"with created": function( test ) {
+		test.expect( 5 );
+
+		this.app.database.escape = function( value ) {
+			test.deepEqual( value, new Date( "Wed Nov 27 16:24:07 2013 -0500" ),
+				"Should escape created value" );
+
+			return "'escaped date'";
+		};
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"INSERT INTO `comments` SET " +
+					"`ticketId` = ?," +
+					"`userId` = ?," +
+					"`body` = ?," +
+					"`created` = 'escaped date'",
+				"Query should insert values into database." );
+			test.deepEqual( values,
+				[ 99, 37, "pay down your debt" ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( null, { insertId: 123 } );
+			});
+		};
+
+		this.comment.create({
+			ticketId: 99,
+			userId: 37,
+			body: "pay down your debt",
+			created: new Date( "Wed Nov 27 16:24:07 2013 -0500" )
 		}, function( error, id ) {
 			test.strictEqual( error, null, "Should not pass an error." );
 			test.strictEqual( id, 123, "Should return inserted id." );
@@ -231,7 +273,8 @@ exports.get = {
 			id: 123,
 			ticketId: 99,
 			userId: 37,
-			body: "pay down your debt"
+			body: "pay down your debt",
+			created: new Date( "Wed Nov 27 16:24:07 2013 -0500" )
 		};
 
 		this.app.database.query = function( query, values, callback ) {
