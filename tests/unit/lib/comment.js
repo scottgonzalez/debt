@@ -54,8 +54,10 @@ exports.create = {
 		});
 	},
 
-	"database insertion error": function( test ) {
-		test.expect( 3 );
+	"invalid reference": function( test ) {
+		test.expect( 7 );
+
+		var providedError = new Error( "database gone" );
 
 		this.app.database.query = function( query, values, callback ) {
 			test.strictEqual( query,
@@ -69,8 +71,52 @@ exports.create = {
 				"Should pass values for escaping." );
 
 			process.nextTick(function() {
-				callback( new Error( "database gone" ) );
+				callback( providedError );
 			});
+		};
+
+		this.app.database.referenceError = function( error ) {
+			test.strictEqual( error, providedError, "Should check if error is a reference error." );
+			return "ticketId";
+		};
+
+		this.comment.create({
+			ticketId: 99,
+			userId: 37,
+			body: "pay down your debt"
+		}, function( error ) {
+			test.strictEqual( error.message, "E_INVALID_DATA: Invalid `ticketId` (99)." );
+			test.strictEqual( error.code, "E_INVALID_DATA" );
+			test.strictEqual( error.field, "ticketId", "Should pass field name with error." );
+			test.strictEqual( error.ticketId, 99, "Should pass field value with error." );
+			test.done();
+		});
+	},
+
+	"database insertion error": function( test ) {
+		test.expect( 4 );
+
+		var providedError = new Error( "database gone" );
+
+		this.app.database.query = function( query, values, callback ) {
+			test.strictEqual( query,
+				"INSERT INTO `comments` SET " +
+					"`ticketId` = ?," +
+					"`userId` = ?," +
+					"`body` = ?",
+				"Query should insert values into database." );
+			test.deepEqual( values,
+				[ 99, 37, "pay down your debt" ],
+				"Should pass values for escaping." );
+
+			process.nextTick(function() {
+				callback( providedError );
+			});
+		};
+
+		this.app.database.referenceError = function( error ) {
+			test.strictEqual( error, providedError, "Should check if error is a reference error." );
+			return null;
 		};
 
 		this.comment.create({
