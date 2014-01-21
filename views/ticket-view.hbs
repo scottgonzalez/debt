@@ -15,7 +15,7 @@
 {{/each}}
 
 {{#if (hasPermission "TICKET:CREATE")}}
-<form method="post" action="/ticket/{{id}}/comment">
+<form method="post" action="/tickets/{{id}}/comments">
 	<textarea name="body"></textarea>
 	<button type="submit">Comment</button>
 </form>
