@@ -8,8 +8,15 @@
 {{{body}}}
 
 {{#each comments}}
-<div>
+<div id="comment-{{id}}">
 	{{userLink user}} {{timeSince created}}
 	<div>{{{body}}}</div>
 </div>
 {{/each}}
+
+{{#if (hasPermission "TICKET:CREATE")}}
+<form method="post" action="/ticket/{{id}}/comment">
+	<textarea name="body"></textarea>
+	<button type="submit">Comment</button>
+</form>
+{{/if}}
