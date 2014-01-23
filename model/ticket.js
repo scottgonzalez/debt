@@ -1,4 +1,4 @@
-var marked = require( "marked" );
+var markdown = require( "../lib/markdown" );
 var util = require( "../lib/util" );
 
 exports = module.exports = ticket;
@@ -27,7 +27,7 @@ util.extend( Ticket.prototype, {
 	initFromSettings: function( settings, callback ) {
 		this.title = settings.title;
 		this.rawBody = settings.body;
-		this.body = this._parseBody( this.rawBody );
+		this.body = markdown.parse( this.rawBody );
 		this.userId = settings.userId;
 		this.created = settings.created;
 		this.edited = settings.edited;
@@ -36,10 +36,6 @@ util.extend( Ticket.prototype, {
 
 	getComments: function( callback ) {
 		this.app.comment.getTicketCommentInstances( this.id, callback );
-	},
-
-	_parseBody: function( body ) {
-		return marked( body );
 	},
 
 	_init: function( callback ) {

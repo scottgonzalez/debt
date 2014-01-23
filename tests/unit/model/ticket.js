@@ -1,4 +1,5 @@
 var Ticket = require( "../../../model/ticket" ).Ticket;
+var markdown = require( "../../../lib/markdown" );
 
 exports.init = {
 	setUp: function( done ) {
@@ -71,8 +72,15 @@ exports.init = {
 
 exports.initFromSettings = {
 	setUp: function( done ) {
+		this._parse = markdown.parse;
+
 		this.app = {};
 		this.ticket = new Ticket( this.app, 37 );
+		done();
+	},
+
+	tearDown: function( done ) {
+		markdown.parse = this._parse;
 		done();
 	},
 
@@ -110,7 +118,7 @@ exports.initFromSettings = {
 			edited: new Date( "2012-01-12 21:15:00" )
 		};
 
-		this.ticket._parseBody = function( body ) {
+		markdown.parse = function( body ) {
 			test.strictEqual( body, "Your debt is *too* high!" );
 			return "parsed body";
 		};

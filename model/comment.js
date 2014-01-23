@@ -1,4 +1,4 @@
-var marked = require( "marked" );
+var markdown = require( "../lib/markdown" );
 var util = require( "../lib/util" );
 
 exports = module.exports = comment;
@@ -26,15 +26,11 @@ util.extend( Comment.prototype, {
 
 	initFromSettings: function( settings, callback ) {
 		this.rawBody = settings.body;
-		this.body = this._parseBody( this.rawBody );
+		this.body = markdown.parse( this.rawBody );
 		this.ticketId = settings.ticketId;
 		this.userId = settings.userId;
 		this.created = settings.created;
 		this._init( callback );
-	},
-
-	_parseBody: function( body ) {
-		return marked( body );
 	},
 
 	_init: function( callback ) {

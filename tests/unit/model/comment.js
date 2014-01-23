@@ -1,4 +1,5 @@
 var Comment = require( "../../../model/comment" ).Comment;
+var markdown = require( "../../../lib/markdown" );
 
 exports.init = {
 	setUp: function( done ) {
@@ -70,8 +71,15 @@ exports.init = {
 
 exports.initFromSettings = {
 	setUp: function( done ) {
+		this._parse = markdown.parse;
+
 		this.app = {};
 		this.comment = new Comment( this.app, 123 );
+		done();
+	},
+
+	tearDown: function( done ) {
+		markdown.parse = this._parse;
 		done();
 	},
 
@@ -107,7 +115,7 @@ exports.initFromSettings = {
 			created: new Date( "Wed Nov 27 16:24:07 2013 -0500" )
 		};
 
-		this.comment._parseBody = function( body ) {
+		markdown.parse = function( body ) {
 			test.strictEqual( body, "pay down your debt" );
 			return "parsed body";
 		};
