@@ -1,15 +1,14 @@
-<h1>Create a New Ticket</h1>
-
-<form method="post" action="/tickets">
-	<div>
-		<label for="title">Title:</label>
-		<input id="title" name="title" required>
-	</div>
-	<div>
-		<label for="body">Description</label>
-		<textarea id="body" name="body" required></textarea>
-	</div>
-	<div>
-		<button type="submit">Create ticket</button>
-	</div>
-</form>
+<div class="content-box">
+	<form method="post" action="/tickets">
+		<header class="content-header">
+			<h2>Create a new ticket</h2>
+		</header>
+		<div class="content-body">
+			<label for="title">Title:</label>
+			<input id="title" name="title" required>
+			<label for="body">Description:</label>
+			<textarea id="body" name="body" required></textarea>
+			<button type="submit">Create ticket</button>
+		</div>
+	</form>
+</div>

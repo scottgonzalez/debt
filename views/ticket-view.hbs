@@ -1,22 +1,42 @@
-<h1>{{title}}</h1>
+<article class="content-box">
+	<header class="content-header">
+		<div class="meta">
+			<p>{{userLink user}} opened {{ticketLink id label=(concat "ticket #" id)}} {{timeSince created}}</p>
+			{{#if (not (equal created edited))}}
+				<p>most recently updated {{timeSince edited}}</p>
+			{{/if}}
+		</div>
+		<h2>{{title}}</h2>
+	</header>
+	<div class="content-body">
+		{{{body}}}
+	</div>
+</article>
 
-<p>Ticket {{ticketLink id}} was created by {{userLink user}} {{timeSince created}}.</p>
-{{#if (not (equal created edited))}}
-	<p>It was most recently updated {{timeSince edited}}.</p>
-{{/if}}
-
-{{{body}}}
 
 {{#each comments}}
-<div id="comment-{{id}}">
-	{{userLink user}} {{timeSince created}}
-	<div>{{{body}}}</div>
-</div>
+<article class="content-box" id="comment-{{id}}">
+	<header class="content-header">
+		<div class="meta">
+			<p>{{userLink user}} commented {{timeSince created}}</p>
+		</div>
+	</header>
+	<div class="content-body">
+		{{{body}}}
+	</div>
+</article>
 {{/each}}
 
 {{#if (hasPermission "TICKET:CREATE")}}
-<form method="post" action="/tickets/{{id}}/comments">
-	<textarea name="body"></textarea>
-	<button type="submit">Comment</button>
-</form>
+<div class="content-box" id="comment-new">
+	<form method="post" action="/tickets/{{id}}/comments">
+		<header class="content-header">
+			<label for="body">Leave a comment:</label>
+		</header>
+		<div class="content-body">
+			<textarea name="body" id="body"></textarea>
+			<button type="submit">Comment</button>
+		</div>
+	</form>
+</div>
 {{/if}}
