@@ -1,75 +1,7 @@
 var Comment = require( "../../../model/comment" ).Comment;
 var markdown = require( "../../../lib/markdown" );
 
-exports.init = {
-	setUp: function( done ) {
-		this._initFromSettings = Comment.prototype.initFromSettings;
-
-		this.app = {
-			comment: {}
-		};
-		done();
-	},
-
-	tearDown: function( done ) {
-		Comment.prototype.initFromSettings = this._initFromSettings;
-		done();
-	},
-
-	"app.comment.get error": function( test ) {
-		test.expect( 2 );
-
-		this.app.comment.get = function( id, callback ) {
-			test.strictEqual( id, 123, "Should pass id to comment." );
-
-			process.nextTick(function() {
-				callback( new Error( "database gone" ) );
-			});
-		};
-
-		var instance = new Comment( this.app, 123 );
-		instance.init(function( error ) {
-			test.strictEqual( error.message, "database gone", "Should pass the error." );
-			test.done();
-		});
-	},
-
-	"valid": function( test ) {
-		test.expect( 3 );
-
-		var providedSettings = {
-			id: 123,
-			ticketId: 99,
-			userId: 37,
-			body: "pay down your debt",
-			created: new Date( "Wed Nov 27 16:24:07 2013 -0500" )
-		};
-
-		this.app.comment.get = function( id, callback ) {
-			test.strictEqual( id, 123, "Should pass id to comment." );
-
-			process.nextTick(function() {
-				callback( null, providedSettings );
-			});
-		};
-
-		Comment.prototype.initFromSettings = function( settings, callback ) {
-			test.strictEqual( settings, providedSettings, "Should pass settings." );
-
-			process.nextTick(function() {
-				callback( null );
-			});
-		};
-
-		var instance = new Comment( this.app, 123 );
-		instance.init(function( error ) {
-			test.strictEqual( error, null, "Should not pass an error." );
-			test.done();
-		});
-	}
-};
-
-exports.initFromSettings = {
+exports._initFromSettings = {
 	setUp: function( done ) {
 		this._parse = markdown.parse;
 
@@ -81,27 +13,6 @@ exports.initFromSettings = {
 	tearDown: function( done ) {
 		markdown.parse = this._parse;
 		done();
-	},
-
-	"init error": function( test ) {
-		test.expect( 1 );
-
-		this.comment._init = function( callback ) {
-			process.nextTick(function() {
-				callback( new Error( "bad init" ) );
-			});
-		};
-
-		this.comment.initFromSettings({
-			id: 123,
-			ticketId: 99,
-			userId: 37,
-			body: "pay down your debt",
-			created: new Date( "Wed Nov 27 16:24:07 2013 -0500" )
-		}, function( error ) {
-			test.strictEqual( error.message, "bad init", "Should pass the error." );
-			test.done();
-		});
 	},
 
 	"valid": function( test ) {
@@ -120,22 +31,20 @@ exports.initFromSettings = {
 			return "parsed body";
 		};
 
-		this.comment._init = function( callback ) {
-			test.strictEqual( this.rawBody, providedSettings.body, "Should save raw body." );
-			test.strictEqual( this.body, "parsed body", "Should save parsed body." );
-			test.strictEqual( this.ticketId, providedSettings.ticketId, "Should save ticketId." );
-			test.strictEqual( this.userId, providedSettings.userId, "Should save userId." );
-			test.strictEqual( this.created, providedSettings.created, "Should save created." );
-
-			process.nextTick(function() {
-				callback( null );
-			});
-		};
-
-		this.comment.initFromSettings( providedSettings, function( error ) {
+		this.comment._initFromSettings( providedSettings, function( error ) {
 			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( this.comment.rawBody, providedSettings.body,
+				"Should save raw body." );
+			test.strictEqual( this.comment.body, "parsed body",
+				"Should save parsed body." );
+			test.strictEqual( this.comment.ticketId, providedSettings.ticketId,
+				"Should save ticketId." );
+			test.strictEqual( this.comment.userId, providedSettings.userId,
+				"Should save userId." );
+			test.strictEqual( this.comment.created, providedSettings.created,
+				"Should save created." );
 			test.done();
-		});
+		}.bind( this ));
 	}
 };
 

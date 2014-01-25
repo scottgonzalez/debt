@@ -1,36 +1,14 @@
+var Model = require( "./model" ).Model;
 var markdown = require( "../lib/markdown" );
-var util = require( "../lib/util" );
 
-exports = module.exports = comment;
-exports.Comment = Comment;
-
-function comment( app, id ) {
-	return new Comment( app, id );
-}
-
-function Comment( app, id ) {
-	this.app = app;
-	this.id = id;
-}
-
-util.extend( Comment.prototype, {
-	init: function( callback ) {
-		this.app.comment.get( this.id, function( error, settings ) {
-			if ( error ) {
-				return callback( error );
-			}
-
-			this.initFromSettings( settings, callback );
-		}.bind( this ));
-	},
-
-	initFromSettings: function( settings, callback ) {
+exports.Comment = Model.factory( "Comment", {
+	_initFromSettings: function( settings, callback ) {
 		this.rawBody = settings.body;
 		this.body = markdown.parse( this.rawBody );
 		this.ticketId = settings.ticketId;
 		this.userId = settings.userId;
 		this.created = settings.created;
-		this._init( callback );
+		callback( null );
 	},
 
 	_init: function( callback ) {

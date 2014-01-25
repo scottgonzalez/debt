@@ -1,76 +1,7 @@
 var Ticket = require( "../../../model/ticket" ).Ticket;
 var markdown = require( "../../../lib/markdown" );
 
-exports.init = {
-	setUp: function( done ) {
-		this._initFromSettings = Ticket.prototype.initFromSettings;
-
-		this.app = {
-			ticket: {}
-		};
-		done();
-	},
-
-	tearDown: function( done ) {
-		Ticket.prototype.initFromSettings = this._initFromSettings;
-		done();
-	},
-
-	"app.ticket.get error": function( test ) {
-		test.expect( 2 );
-
-		this.app.ticket.get = function( id, callback ) {
-			test.strictEqual( id, 37, "Should pass id to ticket." );
-
-			process.nextTick(function() {
-				callback( new Error( "database gone" ) );
-			});
-		};
-
-		var instance = new Ticket( this.app, 37 );
-		instance.init(function( error ) {
-			test.strictEqual( error.message, "database gone", "Should pass the error." );
-			test.done();
-		});
-	},
-
-	"valid": function( test ) {
-		test.expect( 3 );
-
-		var providedSettings = {
-			id: 37,
-			title: "Pay down your debt",
-			body: "Your debt is *too* high!",
-			userId: 99,
-			created: new Date( "2012-01-12 21:00:00" ),
-			edited: new Date( "2012-01-12 21:15:00" )
-		};
-
-		this.app.ticket.get = function( id, callback ) {
-			test.strictEqual( id, 37, "Should pass id to ticket." );
-
-			process.nextTick(function() {
-				callback( null, providedSettings );
-			});
-		};
-
-		Ticket.prototype.initFromSettings = function( settings, callback ) {
-			test.strictEqual( settings, providedSettings, "Should pass settings." );
-
-			process.nextTick(function() {
-				callback( null );
-			});
-		};
-
-		var instance = new Ticket( this.app, 37 );
-		instance.init(function( error ) {
-			test.strictEqual( error, null, "Should not pass an error." );
-			test.done();
-		});
-	}
-};
-
-exports.initFromSettings = {
+exports._initFromSettings = {
 	setUp: function( done ) {
 		this._parse = markdown.parse;
 
@@ -82,28 +13,6 @@ exports.initFromSettings = {
 	tearDown: function( done ) {
 		markdown.parse = this._parse;
 		done();
-	},
-
-	"init error": function( test ) {
-		test.expect( 1 );
-
-		this.ticket._init = function( callback ) {
-			process.nextTick(function() {
-				callback( new Error( "bad init" ) );
-			});
-		};
-
-		this.ticket.initFromSettings({
-			id: 37,
-			title: "Pay down your debt",
-			body: "Your debt is *too* high!",
-			userId: 99,
-			created: new Date( "2012-01-12 21:00:00" ),
-			edited: new Date( "2012-01-12 21:15:00" )
-		}, function( error ) {
-			test.strictEqual( error.message, "bad init", "Should pass the error." );
-			test.done();
-		});
 	},
 
 	"valid": function( test ) {
@@ -123,23 +32,23 @@ exports.initFromSettings = {
 			return "parsed body";
 		};
 
-		this.ticket._init = function( callback ) {
-			test.strictEqual( this.title, providedSettings.title, "Should save title." );
-			test.strictEqual( this.rawBody, providedSettings.body, "Should save raw body." );
-			test.strictEqual( this.body, "parsed body", "Should save parsed body." );
-			test.strictEqual( this.userId, providedSettings.userId, "Should save userId." );
-			test.strictEqual( this.created, providedSettings.created, "Should save created." );
-			test.strictEqual( this.edited, providedSettings.edited, "Should save edited." );
-
-			process.nextTick(function() {
-				callback( null );
-			});
-		};
-
-		this.ticket.initFromSettings( providedSettings, function( error ) {
+		this.ticket._initFromSettings( providedSettings, function( error ) {
 			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( this.ticket.title, providedSettings.title,
+				"Should save title." );
+			test.strictEqual( this.ticket.rawBody, providedSettings.body,
+				"Should save raw body." );
+			test.strictEqual( this.ticket.body, "parsed body",
+				"Should save parsed body." );
+			test.strictEqual( this.ticket.userId, providedSettings.userId,
+				"Should save userId." );
+			test.strictEqual( this.ticket.created, providedSettings.created,
+				"Should save created." );
+			test.strictEqual( this.ticket.edited, providedSettings.edited,
+				"Should save edited." );
+
 			test.done();
-		});
+		}.bind( this ));
 	}
 };
 
