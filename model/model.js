@@ -4,7 +4,9 @@ var util = require( "../lib/util" );
 exports.Model = Model;
 
 function Model( app, id ) {
-	this.app = app;
+	Object.defineProperty( this, "app", {
+		value: app
+	});
 	this.id = id;
 }
 
