@@ -68,7 +68,7 @@ button:active {
 .content-box {
 	border: 1px solid #aaa;
 	border-radius: 4px;
-	margin: 1em 0;
+	margin: 1em 0 1em 60px;
 }
 
 .content-header {
@@ -95,6 +95,11 @@ button:active {
 
 .content-body p:last-child {
 	margin-bottom: 0;
+}
+
+.content-avatar {
+	float: left;
+	border-radius: 4px;
 }
 
 /**********************************************************************/
