@@ -1,7 +1,7 @@
 <article class="content-box">
 	<header class="content-header">
 		<div class="meta">
-			<p>{{userLink user}} opened {{ticketLink id label=(concat "ticket #" id)}} {{timeSince created}}</p>
+			<p>{{userLink user}} opened {{ticketLink this label=(concat "ticket #" id)}} {{timeSince created}}</p>
 			{{#if (not (equal created edited))}}
 				<p>most recently updated {{timeSince edited}}</p>
 			{{/if}}
@@ -12,7 +12,6 @@
 		{{{body}}}
 	</div>
 </article>
-
 
 {{#each comments}}
 <article class="content-box" id="comment-{{id}}">
