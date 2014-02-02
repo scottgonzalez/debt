@@ -6,6 +6,27 @@ exports.Ticket = Model.factory( "Ticket", {
 		this.app.comment.getTicketCommentInstances( this.id, callback );
 	},
 
+	addComment: function( data, callback ) {
+		var now = new Date();
+		data.created = now;
+		data.ticketId = this.id;
+
+		// TODO: wrap in transaction (#49)
+		this.app.comment.create( data, function( error, commentId ) {
+			if ( error ) {
+				return callback( error );
+			}
+
+			this.app.ticket.edit( this.id, { edited: now }, function( error ) {
+				if ( error ) {
+					return callback( error );
+				}
+
+				callback( null, commentId );
+			});
+		}.bind( this ));
+	},
+
 	_initFromSettings: function( settings, callback ) {
 		this.title = settings.title;
 		this.rawBody = settings.body;
