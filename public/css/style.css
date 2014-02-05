@@ -45,6 +45,7 @@ input, textarea, button {
 
 input, textarea {
 	width: 100%;
+	max-width: 100%;
 	padding: .2em;
 	background-color: #eee;
 	border: 1px solid #aaa;
