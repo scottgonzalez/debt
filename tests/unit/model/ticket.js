@@ -141,3 +141,188 @@ exports._loadUser = {
 		}.bind( this ));
 	}
 };
+
+exports.getComments = {
+	setUp: function( done ) {
+		this.app = {
+			comment: {}
+		};
+		this.ticket = new Ticket( this.app, 37 );
+		done();
+	},
+
+	"getTicketCommentInstances error": function( test ) {
+		test.expect( 2 );
+
+		var providedError = new Error();
+
+		this.app.comment.getTicketCommentInstances = function( ticketId, callback ) {
+			test.strictEqual( ticketId, 37, "Should pass id" );
+
+			process.nextTick(function() {
+				callback( providedError );
+			});
+		};
+
+		this.ticket.getComments(function( error ) {
+			test.strictEqual( error, providedError, "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"valid": function( test ) {
+		test.expect( 3 );
+
+		var providedComments = [];
+		this.app.comment.getTicketCommentInstances = function( ticketId, callback ) {
+			test.strictEqual( ticketId, 37, "Should pass id" );
+
+			process.nextTick(function() {
+				callback( null, providedComments );
+			});
+		};
+
+		this.ticket.getComments(function( error, comments ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( comments, providedComments, "Should pass the comments." );
+			test.done();
+		});
+	}
+};
+
+exports.addComment = {
+	setUp: function( done ) {
+		this.app = {
+			comment: {},
+			ticket: {}
+		};
+		this.ticket = new Ticket( this.app, 37 );
+		done();
+	},
+
+	"comment.create error": function( test ) {
+		test.expect( 1 );
+
+		var providedError = new Error();
+
+		this.app.comment.create = function( data, callback ) {
+			process.nextTick(function() {
+				callback( providedError );
+			});
+		};
+
+		this.ticket.addComment({
+			userId: 99,
+			body: "a comment"
+		}, function( error ) {
+			test.strictEqual( error, providedError, "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"ticket.edit error": function( test ) {
+		test.expect( 1 );
+
+		var providedError = new Error();
+
+		this.app.comment.create = function( data, callback ) {
+			process.nextTick(function() {
+				callback( null, 123 );
+			});
+		};
+
+		this.app.ticket.edit = function( id, data, callback ) {
+			process.nextTick(function() {
+				callback( providedError );
+			});
+		};
+
+		this.ticket.addComment({
+			userId: 99,
+			body: "a comment"
+		}, function( error ) {
+			test.strictEqual( error, providedError, "Should pass the error." );
+			test.done();
+		});
+	},
+
+	"without created": function( test ) {
+		test.expect( 8 );
+
+		var start = new Date();
+		var commentDate;
+
+		this.app.comment.create = function( data, callback ) {
+			var now = new Date();
+			commentDate = data.created;
+
+			test.strictEqual( data.ticketId, 37, "Should pass ticket id." );
+			test.ok( start <= commentDate && commentDate <= now, "Should generate created." );
+			test.strictEqual( data.userId, 99, "Should pass user id." );
+			test.strictEqual( data.body, "a comment", "Should pass body." );
+
+			process.nextTick(function() {
+				callback( null, 123 );
+			});
+		};
+
+		this.app.ticket.edit = function( id, data, callback ) {
+			test.strictEqual( id, 37, "Should pass ticket id." );
+			test.deepEqual( data, { edited: commentDate }, "Should pass edited." );
+
+			process.nextTick(function() {
+				callback( null );
+			});
+		};
+
+		this.ticket.addComment({
+			userId: 99,
+			body: "a comment"
+		}, function( error, commentId ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( commentId, 123, "Should pass comment id." );
+			test.done();
+		});
+	},
+
+	"with created": function( test ) {
+		test.expect( 5 );
+
+		this.app.comment.create = function( data, callback ) {
+			var now = new Date();
+			commentDate = data.created;
+
+			test.deepEqual( data, {
+				ticketId: 37,
+				created: new Date( "2012-01-12 21:15:00" ),
+				userId: 99,
+				body: "a comment"
+			}, "Should pass comment data." );
+
+			process.nextTick(function() {
+				callback( null, 123 );
+			});
+		};
+
+		this.app.ticket.edit = function( id, data, callback ) {
+			test.strictEqual( id, 37, "Should pass ticket id." );
+			test.deepEqual( data, {
+				edited: new Date( "2012-01-12 21:15:00" )
+			}, "Should pass edited." );
+
+			process.nextTick(function() {
+				callback( null );
+			});
+		};
+
+		this.ticket.addComment({
+			userId: 99,
+			body: "a comment",
+			created: new Date( "2012-01-12 21:15:00" )
+		}, function( error, commentId ) {
+			test.strictEqual( error, null, "Should not pass an error." );
+			test.strictEqual( commentId, 123, "Should pass comment id." );
+			test.done();
+		});
+	}
+};

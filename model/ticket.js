@@ -7,9 +7,10 @@ exports.Ticket = Model.factory( "Ticket", {
 	},
 
 	addComment: function( data, callback ) {
-		var now = new Date();
-		data.created = now;
 		data.ticketId = this.id;
+		if ( !data.created ) {
+			data.created = new Date();
+		}
 
 		// TODO: wrap in transaction (#49)
 		this.app.comment.create( data, function( error, commentId ) {
@@ -17,7 +18,7 @@ exports.Ticket = Model.factory( "Ticket", {
 				return callback( error );
 			}
 
-			this.app.ticket.edit( this.id, { edited: now }, function( error ) {
+			this.app.ticket.edit( this.id, { edited: data.created }, function( error ) {
 				if ( error ) {
 					return callback( error );
 				}
