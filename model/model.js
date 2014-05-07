@@ -7,6 +7,9 @@ function Model( app, id ) {
 	Object.defineProperty( this, "app", {
 		value: app
 	});
+	Object.defineProperty( this, "database", {
+		value: app.database
+	});
 	this.id = id;
 }
 

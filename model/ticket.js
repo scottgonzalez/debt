@@ -12,20 +12,22 @@ exports.Ticket = Model.factory( "Ticket", {
 			data.created = new Date();
 		}
 
-		// TODO: wrap in transaction (#49)
-		this.app.comment.create( data, function( error, commentId ) {
+		this.database.transaction({
+			commentId: function createComment( transaction, callback ) {
+				this.app.comment.create( data, transaction.wrap( callback ) );
+			}.bind( this ),
+
+			updateTicket: function updateTicket( transaction, callback ) {
+				this.app.ticket.edit( this.id, { edited: data.created },
+					transaction.wrap( callback ) );
+			}.bind( this )
+		}, function( error, transactionData ) {
 			if ( error ) {
 				return callback( error );
 			}
 
-			this.app.ticket.edit( this.id, { edited: data.created }, function( error ) {
-				if ( error ) {
-					return callback( error );
-				}
-
-				callback( null, commentId );
-			});
-		}.bind( this ));
+			callback( null, transactionData.commentId );
+		});
 	},
 
 	_initFromSettings: function( settings, callback ) {

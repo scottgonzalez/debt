@@ -194,99 +194,15 @@ exports.addComment = {
 	setUp: function( done ) {
 		this.app = {
 			comment: {},
-			ticket: {}
+			ticket: {},
+			database: {}
 		};
 		this.ticket = new Ticket( this.app, 37 );
 		done();
 	},
 
-	"comment.create error": function( test ) {
-		test.expect( 1 );
-
-		var providedError = new Error();
-
-		this.app.comment.create = function( data, callback ) {
-			process.nextTick(function() {
-				callback( providedError );
-			});
-		};
-
-		this.ticket.addComment({
-			userId: 99,
-			body: "a comment"
-		}, function( error ) {
-			test.strictEqual( error, providedError, "Should pass the error." );
-			test.done();
-		});
-	},
-
-	"ticket.edit error": function( test ) {
-		test.expect( 1 );
-
-		var providedError = new Error();
-
-		this.app.comment.create = function( data, callback ) {
-			process.nextTick(function() {
-				callback( null, 123 );
-			});
-		};
-
-		this.app.ticket.edit = function( id, data, callback ) {
-			process.nextTick(function() {
-				callback( providedError );
-			});
-		};
-
-		this.ticket.addComment({
-			userId: 99,
-			body: "a comment"
-		}, function( error ) {
-			test.strictEqual( error, providedError, "Should pass the error." );
-			test.done();
-		});
-	},
-
-	"without created": function( test ) {
-		test.expect( 8 );
-
-		var start = new Date();
-		var commentDate;
-
-		this.app.comment.create = function( data, callback ) {
-			var now = new Date();
-			commentDate = data.created;
-
-			test.strictEqual( data.ticketId, 37, "Should pass ticket id." );
-			test.ok( start <= commentDate && commentDate <= now, "Should generate created." );
-			test.strictEqual( data.userId, 99, "Should pass user id." );
-			test.strictEqual( data.body, "a comment", "Should pass body." );
-
-			process.nextTick(function() {
-				callback( null, 123 );
-			});
-		};
-
-		this.app.ticket.edit = function( id, data, callback ) {
-			test.strictEqual( id, 37, "Should pass ticket id." );
-			test.deepEqual( data, { edited: commentDate }, "Should pass edited." );
-
-			process.nextTick(function() {
-				callback( null );
-			});
-		};
-
-		this.ticket.addComment({
-			userId: 99,
-			body: "a comment"
-		}, function( error, commentId ) {
-			test.strictEqual( error, null, "Should not pass an error." );
-			test.strictEqual( commentId, 123, "Should pass comment id." );
-			test.done();
-		});
-	},
-
-	"with created": function( test ) {
-		test.expect( 5 );
+	"valid": function( test ) {
+		test.expect( 7 );
 
 		this.app.comment.create = function( data, callback ) {
 			var now = new Date();
@@ -313,6 +229,36 @@ exports.addComment = {
 			process.nextTick(function() {
 				callback( null );
 			});
+		};
+
+		this.app.database.transaction = function( actions, callback ) {
+			function commentIdAction() {
+				actions.commentId({
+					wrap: function( callback ) {
+						test.strictEqual( callback, updateTicketAction,
+							"commentId should wrap callback." );
+						return callback;
+					}
+				}, updateTicketAction );
+			}
+
+			function updateTicketAction() {
+				actions.updateTicket({
+					wrap: function( callback ) {
+						test.strictEqual( callback, finish,
+							"commentId should wrap callback." );
+						return callback;
+					}
+				}, finish );
+			}
+
+			function finish() {
+				callback( null, {
+					commentId: 123
+				});
+			}
+
+			commentIdAction();
 		};
 
 		this.ticket.addComment({
