@@ -6,10 +6,12 @@
 	<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-{{#if activeUser}}
-	logged in as {{activeUser.username}}; <a href="/logout">logout</a>
-{{else}}
-	<a href="/login">login</a>
+{{#if (not hideLogin)}}
+	{{#if activeUser}}
+		logged in as {{activeUser.username}}; <a href="/logout">logout</a>
+	{{else}}
+		<a href="/login">login</a>
+	{{/if}}
 {{/if}}
 
 <div class="main">
