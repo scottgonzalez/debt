@@ -25,7 +25,7 @@ exports.constructor = {
 
 			return {
 				getConnection: function( callback ) {
-					test.ok( "Should get a connection." );
+					test.ok( true, "Should get a connection." );
 
 					process.nextTick(function() {
 						callback( providedError );
@@ -51,7 +51,7 @@ exports.constructor = {
 
 			return {
 				getConnection: function( callback ) {
-					test.ok( "Should get a connection." );
+					test.ok( true, "Should get a connection." );
 
 					process.nextTick(function() {
 						callback( null, providedConnection );
@@ -116,7 +116,7 @@ exports[ "Transaction constructor" ] = {
 		var providedError = new Error();
 
 		this.database.pool.getConnection = function( callback ) {
-			test.ok( "Should get a connection." );
+			test.ok( true, "Should get a connection." );
 
 			process.nextTick(function() {
 				callback( providedError );
@@ -143,7 +143,7 @@ exports[ "Transaction constructor" ] = {
 		};
 
 		this.connection.release = function() {
-			test.ok( "Should release connection." );
+			test.ok( true, "Should release connection." );
 		};
 
 		new Transaction( this.database, function( error ) {
@@ -208,7 +208,7 @@ exports[ "Transaction done" ] = {
 		};
 
 		this.connection.release = function() {
-			test.ok( "Should release connection." );
+			test.ok( true, "Should release connection." );
 		};
 
 		this.transaction.done( new Error(), function( error ) {
@@ -231,7 +231,7 @@ exports[ "Transaction done" ] = {
 		};
 
 		this.connection.release = function() {
-			test.ok( "Should release connection." );
+			test.ok( true, "Should release connection." );
 		};
 
 		this.transaction.done( providedError, function( error ) {
