@@ -13,7 +13,7 @@
     "mysql": "2.0.0-alpha9",
     "express": "3.4.4",
     "async": "0.2.9",
-    "hbs": "2.4.0",
+    "hbs": "2.7.0",
     "connect-oauth-github": "0.1.0",
     "connect-mysql": "0.4.0",
     "github-request": "1.1.0",

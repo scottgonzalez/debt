@@ -1,3 +1,4 @@
+var hbs = require( "hbs" );
 var Database = require( "./lib/database" );
 var web = require( "./lib/web" );
 var util = require( "./lib/util" );
@@ -81,6 +82,7 @@ util.extend( Debt.prototype, {
 
 		// Create Express application
 		this.web = web.createServer( this );
+		hbs.localsAsTemplateData( this.web );
 
 		// Initialize auth provider
 		this.auth.init();

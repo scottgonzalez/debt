@@ -79,6 +79,10 @@ button:active {
 	border-radius: 4px 4px 0 0;
 }
 
+.content-box-current-user .content-header {
+	background-color: #dee;
+}
+
 .content-header h2 {
 	margin: .25em 0;
 }

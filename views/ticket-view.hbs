@@ -1,6 +1,6 @@
 <article class="content-container">
 	{{avatar user class="content-avatar"}}
-	<div class="content-box">
+	{{#contentBox user=user}}
 		<header class="content-header">
 			<div class="meta">
 				<p>{{userLink user}} opened {{ticketLink this label=(concat "ticket #" id)}} {{timeSince created}}</p>
@@ -13,13 +13,13 @@
 		<div class="content-body">
 			{{{body}}}
 		</div>
-	</div>
+	{{/contentBox}}
 </article>
 
 {{#each comments}}
 <article class="content-container" id="comment-{{id}}">
 	{{avatar user class="content-avatar"}}
-	<div class="content-box" >
+	{{#contentBox user=user}}
 		<header class="content-header">
 			<div class="meta">
 				<p>{{userLink user}} commented {{timeSince created}}</p>
@@ -28,14 +28,14 @@
 		<div class="content-body">
 			{{{body}}}
 		</div>
-	</div>
+	{{/contentBox}}
 </article>
 {{/each}}
 
 {{#if (hasPermission "TICKET:CREATE")}}
 <div class="content-container" id="comment-new">
 	{{avatar activeUser class="content-avatar"}}
-	<div class="content-box">
+	{{#contentBox}}
 		<form method="post" action="/tickets/{{id}}/comments">
 			<header class="content-header">
 				<label for="body">Leave a comment:</label>
@@ -45,6 +45,6 @@
 				<button type="submit">Comment</button>
 			</div>
 		</form>
-	</div>
+	{{/contentBox}}
 </div>
 {{/if}}
