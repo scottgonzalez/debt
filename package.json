@@ -24,6 +24,7 @@
     "gravatar": "1.0.6"
   },
   "devDependencies": {
+    "dco": "1.0.0",
     "git-tools": "0.0.8",
     "nodeunit": "0.8.2",
     "sane-email-validation": "1.0.0"

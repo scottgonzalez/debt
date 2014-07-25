@@ -39,11 +39,16 @@ function unitTests( callback ) {
 }
 
 function checkDco( callback ) {
-	var dco = require( "../tools/dco" );
+	var dco = require( "dco" );
 
 	console.log();
 	console.log( "Checking commits for licensing..." );
-	dco.getCommitErrors(function( error, errors ) {
+	dco.getCommitErrors({
+		path: ".",
+		exceptionalAuthors: {
+			"scott.gonzalez@gmail.com": "Scott González"
+		}
+	}, function( error, errors ) {
 		if ( error ) {
 			return callback( error );
 		}
